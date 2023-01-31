@@ -8,20 +8,28 @@ Er zijn 3 manieren om de tool te gebruiken, die elk hieronder zullen worden toeg
 
 ## Gebruikershandleiding: QGIS plugin
 ### Installatie
+_Afhankelijk van de distributiewijze_
+
+Na de installatie zal er in de Processing Toolbox in de categorie 'Limburg Flood Impact' een aantal processing algorithms zijn toegevoegd. Deze dienen in een bepaalde volgorde te worden doorlopen. Zie hiervoor het stappenplan.
+
 ### Stappenplan
+1. Verzamel de benodigde data en voeg deze toe aan het QGIS project. Zie voor meer details hierover de paragraaf 'Invoer en uitvoer'.
+2. Voer achter elkaar de processing algorithms uit. Voor de juiste volgorde en meer informatie, zie de paragraaf 'Methode en stappenplan'. Controleer na het uitvoeren van elke stap de attribute table van de pandentabel.
+3. Als je niet kan programmeren maar dit proces wel verder wilt automatiseren, dan kan dat binnen QGIS met de Graphical Modeler. Zie hiervoor https://docs.qgis.org/3.22/en/docs/user_manual/processing/modeler.html
+
 
 ## Gebruikershandleiding: Command line
 Om de tool via de command line te kunnen gebruiken, heb je Python nodig en moet je de python library `limburg-flood-impact` nodig.
 
 `> pip install limburg-flood-impact`
 
-Vervolgens kan je de verschillende stappen uitvoeren door deze via python aan te roepen:
+Vervolgens kan je de verschillende stappen uitvoeren door het betreffende commando als volgt aan te roepen:
 
-`> python check python check_address.py -b path_to_buildings_data -a path_to_adress_data`
+`> check_address -b path_to_buildings_data -a path_to_adress_data`
 
 Meer informatie over de specifieke manier om elk script aan te roepen kan met het argument `-h`:
 
-`> python check python check_address.py -h`
+`> check_address -h`
 
 Voor een uitgebreidere uitleg over de argumenten van deze scripts, zie onder "Invoer en uitvoer"
 
@@ -55,9 +63,9 @@ De methode bestaat uit vier stappen. In elke stap wordt er meer informatie over 
 
 ### 1.	Bepalen of panden een adres hebben
 #### Gebruik
-_QGIS_: **Naam van het processing algorithm in QGIS**
+_QGIS_: Check Addresses
 
-_Command line_: `python check_addresses.py -h`
+_Command line_: `check_addresses -h`
 
 _Python_:
 ```
@@ -74,9 +82,15 @@ Aan de panden wordt het veld `heeft_adres` (boolean) toegevoegd. Dit attribuut k
 
 ### 2.	Kwetsbare panden classificeren per neerslagverdeling (stedelijke/landelijke/gebiedsbrede neerslag)
 #### Gebruik
-_QGIS_: **Naam van het processing algorithm in QGIS**
+_QGIS_: 
+- Classify Area Wide Rain
+- Classify Rural Rain
+- Classify Urban Rain
 
-_Command line_: `python classify_area_wide_rain.py -h`
+_Command line_: 
+- `classify_area_wide_rain -h`  
+- `classify_urban_rain -h`  
+- `classify_rural_rain -h`  
 
 _Python_:
 ```
@@ -126,11 +140,9 @@ Neerslag gebiedsbreed:
 ### 3. Samengevoegde classificatie per bui (T10/T25/T100)
 #### Gebruik
 
-**DIT AANPASSEN ALS DIT ONDERDEEL GEIMPLEMENTEERD IS**
+_QGIS_: Combine Classification
 
-_QGIS_: **Naam van het processing algorithm in QGIS**
-
-_Command line_: `python combine_classification.py -h`
+_Command line_: `combine_classification -h`
 
 _Python_:
 ```
@@ -143,7 +155,7 @@ combine_classification(buildings_path)
 ```
 
 #### Algoritme
-In deze stap worden de tussenclassificaties per neerslaggebied vertaald naar 1 klasse per pand per bui. Dit wordt gedaan met de vertaaltabel **EXCELSHEET OPNEMEN IN DE REPO EN DAARNAAR VERWIJZEN**
+In deze stap worden de tussenclassificaties per neerslaggebied vertaald naar 1 klasse per pand per bui. Dit wordt gedaan met de vertaaltabel https://github.com/nens/limburg-flood-impact/blob/main/misc/classificatie.xlsx
 
 ### 4. Toetsing aan de norm
 #### Gebruik
@@ -151,27 +163,11 @@ In deze stap worden de tussenclassificaties per neerslaggebied vertaald naar 1 k
 
 _QGIS_: **Naam van het processing algorithm in QGIS**
 
-_Command line_: `python classify_area_wide_rain.py -h`
+_Command line_: `classify_area_wide_rain -h`
 
 _Python_:
 ```
-from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain, classify_rural_rain, classify_urban_rain
-from pathlib import Path
-
-buildings_path = Path("C:/Temp/buildings.gpkg")
-t10_stedelijk_path = Path("C:/Temp/water_depth_t10_stedelijk.tif")
-t10_landelijk_path = Path("C:/Temp/water_depth_t10_landelijk.tif")
-t10_gebiedsbreed_path = Path("C:/Temp/water_depth_t10_gebiedsbreed.tif")
-t25_stedelijk_path = Path("C:/Temp/water_depth_t25_stedelijk.tif")
-t25_landelijk_path = Path("C:/Temp/water_depth_t25_landelijk.tif")
-t25_gebiedsbreed_path = Path("C:/Temp/water_depth_t25_gebiedsbreed.tif")
-t100_stedelijk_path = Path("C:/Temp/water_depth_t100_stedelijk.tif")
-t100_landelijk_path = Path("C:/Temp/water_depth_t100_landelijk.tif")
-t100_gebiedsbreed_path = Path("C:/Temp/water_depth_t100_gebiedsbreed.tif")
-
-classify_urban_rain(buildings_path, t10_stedelijk_path, t25_stedelijk_path, t100_stedelijk_path)
-classify_rural_rain(buildings_path, t10_landelijk_path, t25_landelijk_path, t100_landelijk_path)
-classify_area_wide_rain(buildings_path, t10_gebiedsbreed_path, t25_gebiedsbreed_path, t100_gebiedsbreed_path)
+python_code_snippet
 ```
 
 #### Algoritme
