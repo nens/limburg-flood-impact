@@ -34,6 +34,11 @@ Meer informatie over de specifieke manier om elk script aan te roepen kan met he
 Voor een uitgebreidere uitleg over de argumenten van deze scripts, zie onder "Invoer en uitvoer"
 
 ## Gebruikershandleiding: Python
+Installeer het python package limburg-flood-impact
+
+`> pip install limburg-flood-impact`
+
+Voer de stappen uit zoals beschreven in de paragraaf "Methode en stappenplan". Let erop dat alle data voldoet aan de eisen die daaraan worden gesteld in "Invoer en uitvoer".
 
 ## Invoer en uitvoer
 ### Panden ('buildings')
