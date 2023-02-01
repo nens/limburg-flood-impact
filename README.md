@@ -186,6 +186,6 @@ Optioneel kan elk pand getoetst worden aan de norm. Daarbij wordt de volgende me
 - De toetsingsklasse wordt vervolgens vertaald naar "Voldoet aan norm" (ja/nader onderzoeken). Zie de vertaaltabel in de bijlage.
 - Nader onderzoek moet voor de betreffende panden uitwijzen:
   - Is het wateroverlastrisico reëel of een artefact de GIS analyse of van het hydrodynamisch rekenmodel?
-  - Is de totale afstroming uit landelijk gebied hoger dan de drempelwaarde (750 m3 bij 33 mm in 20 minuten, of 1250 m3 bij 47 mm in 2 uur)?
+  - Is de totale afstroming uit landelijk gebied hoger dan de drempelwaarde (750 m3 bij 33 mm in 20 minuten, of 1250 m3 bij T25)?
 - In de tool geven we de gebruiker de mogelijkheid een polygoon op te geven van het gebied waar de afstroming boven deze drempelwaarde uitkomt. Als het pand geheel binnen deze polygoon ligt en het attribuut “Voldoet aan norm” de waarde “nader onderzoeken” heeft, wordt “voldoet aan norm” geüpdate naar “nee”.
 
