@@ -37,7 +37,7 @@ def check_building_have_address(buildings_path: Path, adresses_path: Path):
         adresses.pandidentificatie IS NOT NULL AS heeft_adres
     FROM
         buildings
-        LEFT JOIN adresses ON buildings.identificatie = adresses.pandidentificatie    
+        LEFT JOIN adresses ON buildings.identificatie = adresses.pandidentificatie
     """.format(",".join(field_selection))
 
     join_layer: ogr.Layer = memory_ds.ExecuteSQL(sql, dialect="OGRSQL")
