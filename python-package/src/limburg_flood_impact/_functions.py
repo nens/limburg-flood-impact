@@ -355,6 +355,10 @@ def get_water_height_array(water_band: gdal.Band, minX: float, maxX: float, minY
     """
     water_array = water_band.ReadAsArray(minX, maxY, int(maxX - minX), int(minY - maxY))
     water_array[water_array == water_band.GetNoDataValue()] = 0
+    # cannot be below 0 so filter out
+    water_array[water_array < 0] = 0
+    # filter out unreasonably large values -> most likely no data not set correctly
+    water_array[water_array > 1000] = 0
     return water_array
 
 
