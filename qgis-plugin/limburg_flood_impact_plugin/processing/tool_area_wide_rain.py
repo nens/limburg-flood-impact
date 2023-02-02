@@ -79,9 +79,10 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
         t100_path = get_raster_path(t100_raster)
 
         classify_area_wide_rain(Path(buildings_datasource), t10_path, t25_path, t100_path,
-                                self.set_feedback_percent)
+                                self.set_feedback_percent, self.feedback)
 
-        feedback.pushInfo("Column with classification successfully added!")
+        if not self.feedback.isCanceled():
+            feedback.pushInfo("Column with classification successfully added!")
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         reload_layer_in_project(buildings_layer.id())
