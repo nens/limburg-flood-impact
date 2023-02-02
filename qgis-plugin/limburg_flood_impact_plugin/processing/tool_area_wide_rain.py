@@ -49,6 +49,13 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
         if not single_band:
             return False, msg
 
+        buildings = self.parameterAsLayer(parameters, self.BUILDINGS_LAYER, context)
+
+        field_exist, msg = has_field(buildings, "identificatie")
+
+        if not field_exist:
+            return False, msg
+
         return super().checkParameterValues(parameters, context)
 
     def processAlgorithm(self, parameters, context: QgsProcessingContext,
