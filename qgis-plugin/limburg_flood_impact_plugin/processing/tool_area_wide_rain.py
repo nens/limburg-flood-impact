@@ -6,7 +6,7 @@ from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWrite
 
 from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain
 
-from .utils import (reload_layer_in_project, get_raster_path, has_one_band)
+from .utils import (reload_layer_in_project, get_raster_path, has_one_band, has_field)
 
 
 class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
