@@ -81,7 +81,10 @@ class ClassifyRuralRainAlgorithm(QgsProcessingAlgorithm):
         classify_rural_rain(Path(buildings_datasource), t10_path, t25_path, t100_path,
                             self.set_feedback_percent, self.feedback)
 
-        feedback.pushInfo("Column with classification successfully added!")
+        if not self.feedback.isCanceled():
+            self.feedback.pushInfo("Column with classification successfully added!")
+        else:
+            self.feedback.pushWarning("Calculation did not finish, due to user interruption. Only part of the values was calculated.")
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         reload_layer_in_project(buildings_layer.id())

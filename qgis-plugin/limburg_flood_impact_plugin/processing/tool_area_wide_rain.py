@@ -82,7 +82,9 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
                                 self.set_feedback_percent, self.feedback)
 
         if not self.feedback.isCanceled():
-            feedback.pushInfo("Column with classification successfully added!")
+            self.feedback.pushInfo("Column with classification successfully added!")
+        else:
+            self.feedback.pushWarning("Calculation did not finish, due to user interruption. Only part of the values was calculated.")
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         reload_layer_in_project(buildings_layer.id())
