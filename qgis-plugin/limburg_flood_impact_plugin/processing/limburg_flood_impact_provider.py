@@ -1,4 +1,4 @@
-from qgis.PyQt.QtGui import QIcon
+# from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProcessingProvider
 
 from .tool_check_address import CheckAddressAlgorithm
@@ -6,6 +6,7 @@ from .tool_urban_rain import ClassifyUrbanRainAlgorithm
 from .tool_rural_rain import ClassifyRuralRainAlgorithm
 from .tool_area_wide_rain import ClassifyAreaWideRainAlgorithm
 from .tool_combine_classification import CombineClassificationAlgorithm
+from .tool_test_against_flood_protection_norm import TestAgainstFloodProtectionNormAlgorithm
 
 
 class LimburgFloodImpactProvider(QgsProcessingProvider):
@@ -22,6 +23,7 @@ class LimburgFloodImpactProvider(QgsProcessingProvider):
         self.addAlgorithm(ClassifyUrbanRainAlgorithm())
         self.addAlgorithm(ClassifyRuralRainAlgorithm())
         self.addAlgorithm(ClassifyAreaWideRainAlgorithm())
+        self.addAlgorithm(TestAgainstFloodProtectionNormAlgorithm())
 
     def id(self):
         return "limburgfloodimpact"
