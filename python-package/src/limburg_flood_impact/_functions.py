@@ -378,24 +378,28 @@ def common_arguments_parser() -> argparse.ArgumentParser:
         '--buildings',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with buildings.",
+        required=True
     )
 
     parser.add_argument(
         '--t10',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t10.",
+        required=True
     )
 
     parser.add_argument(
         '--t25',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t25.",
+        required=True
     )
 
     parser.add_argument(
         '--t100',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t100.",
+        required=True
     )
 
     return parser
