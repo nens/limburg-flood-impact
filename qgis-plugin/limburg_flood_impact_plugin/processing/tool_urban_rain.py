@@ -6,7 +6,7 @@ from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWrite
 
 from limburg_flood_impact.classify_urban_rain import classify_urban_rain
 
-from .utils import (reload_layer_in_project, get_raster_path, has_one_band)
+from .utils import (reload_layer_in_project, get_raster_path, has_one_band, has_field)
 
 
 class ClassifyUrbanRainAlgorithm(QgsProcessingAlgorithm):
@@ -47,6 +47,13 @@ class ClassifyUrbanRainAlgorithm(QgsProcessingAlgorithm):
         single_band, msg = has_one_band(t100_raster)
 
         if not single_band:
+            return False, msg
+
+        buildings = self.parameterAsLayer(parameters, self.BUILDINGS_LAYER, context)
+
+        field_exist, msg = has_field(buildings, "identificatie")
+
+        if not field_exist:
             return False, msg
 
         return super().checkParameterValues(parameters, context)
