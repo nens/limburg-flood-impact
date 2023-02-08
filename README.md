@@ -63,6 +63,13 @@ _Overige eisen_:
 - Nodatavalue is gedefinieerd
 - Projectie is Rijksdriehoekstelsel (Nieuw) (EPSG:28992)
 
+### Normering regionale wateroverlast ('flood protection norm')
+_Beschrijving_: Polygonen die aangeven voor welke herhalingstijd het betreffende gebied beschermt moet zijn. Deze input moet een selectie zijn uit de laag "Normering regionale wateroverlast" van de WFS service "Provinciale beleidsplannen" van de provincie Limburg.
+_Geometrietype_: Polygon
+_Verplicht attribuut_: "NORM"
+_Bestandsformaat_: GeoPackage
+_Overige instructies_: Om deze gegegevens te verkrijgen: maak in QGIS verbinding met de WFS service https://portal.prvlimburg.nl/geodata/PROVINCIALE_BELEIDSPLANNEN/wfs? . Deze service bevat een groot aantal lagen. Voeg de laag "Normering regionale wateroverlast" toe aan het QGIS project. Maak een selectie op basis van het gebied waarvoor de analyse moet worden gedaan. Sla deze selectie op als GeoPackage.
+
 ## Methode en stappenplan
 De methode bestaat uit vier stappen. In elke stap wordt er meer informatie over elk pand bekend; de methode wordt zo ingericht, dat al deze informatie beschikbaar blijft en als attributen aan het pand worden toegevoegd. 
 
@@ -164,15 +171,19 @@ In deze stap worden de tussenclassificaties per neerslaggebied vertaald naar 1 k
 
 ### 4. Toetsing aan de norm
 #### Gebruik
-**DIT AANPASSEN ALS DIT ONDERDEEL GEIMPLEMENTEERD IS**
+_QGIS_: Test Against Flood Protection Norm
 
-_QGIS_: **Naam van het processing algorithm in QGIS**
-
-_Command line_: `classify_area_wide_rain -h`
+_Command line_: `test_against_flood_protection_norm -h`
 
 _Python_:
 ```
-python_code_snippet
+from limburg_flood_impact.test_against_flood_protection_norm import test_against_flood_protection_norm
+from pathlib import Path
+
+buildings_path = Path("C:/Temp/buildings.gpkg")
+flood_norm_path = Path("C:/Temp/flood_protection_norm.gpkg")
+
+test_against_flood_protection_norm(buildings_path=buildings_path, flood_norm_path=flood_norm_path)
 ```
 
 #### Algoritme
