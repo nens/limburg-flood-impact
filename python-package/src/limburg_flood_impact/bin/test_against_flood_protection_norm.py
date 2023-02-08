@@ -17,6 +17,7 @@ def main():
         '--buildings',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with buildings.",
+        required=True
     )
 
     parser.add_argument(
@@ -24,6 +25,7 @@ def main():
         '--flood_norm',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood areas.",
+        required=True
     )
 
     args = parser.parse_args()
@@ -32,10 +34,12 @@ def main():
     flood_norm_path: Path = args.flood_norm
 
     if not buildings_path.exists():
-        raise ValueError("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        print("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        return
 
     if not flood_norm_path.exists():
-        raise ValueError("File {} does not exist.".format(flood_norm_path.absolute().as_posix()))
+        print("File {} does not exist.".format(flood_norm_path.absolute().as_posix()))
+        return
 
     test_against_flood_protection_norm(buildings_path, flood_norm_path, print_percent)
 

@@ -16,6 +16,7 @@ def main():
         '--buildings',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with buildings.",
+        required=True
     )
 
     parser.add_argument(
@@ -23,6 +24,7 @@ def main():
         '--addresses',
         type=lambda p: Path(p).absolute(),
         help="Path to the file with addresses.",
+        required=True
     )
 
     args = parser.parse_args()
@@ -31,10 +33,12 @@ def main():
     address_path: Path = args.addresses
 
     if not buildings_path.exists():
-        raise ValueError("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        print("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        return
 
     if not address_path.exists():
-        raise ValueError("File {} does not exist.".format(address_path.absolute().as_posix()))
+        print("File {} does not exist.".format(address_path.absolute().as_posix()))
+        return
 
     check_building_have_address(buildings_path, address_path)
 

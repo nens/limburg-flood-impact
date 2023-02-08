@@ -21,16 +21,20 @@ def main():
     t100_path: Path = args.t100
 
     if not buildings_path.exists():
-        raise ValueError("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        print("File {} does not exist.".format(buildings_path.absolute().as_posix()))
+        return
 
     if not t10_path.exists():
-        raise ValueError("File {} does not exist.".format(t10_path.absolute().as_posix()))
+        print("File {} does not exist.".format(t10_path.absolute().as_posix()))
+        return
 
     if not t25_path.exists():
-        raise ValueError("File {} does not exist.".format(t25_path.absolute().as_posix()))
+        print("File {} does not exist.".format(t25_path.absolute().as_posix()))
+        return
 
     if not t100_path.exists():
-        raise ValueError("File {} does not exist.".format(t100_path.absolute().as_posix()))
+        print("File {} does not exist.".format(t100_path.absolute().as_posix()))
+        return
 
     classify_area_wide_rain(buildings_path, t10_path, t25_path, t100_path, print_percent)
 
