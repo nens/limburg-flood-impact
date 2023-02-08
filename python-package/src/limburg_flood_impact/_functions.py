@@ -411,3 +411,33 @@ def print_percent(value: float) -> None:
         Percent.
     """
     print(f"Done: {round(value, 2)}%.", end="\r")
+
+
+def find_or_create_field(layer: ogr.Layer,
+                         field_name: str,
+                         field_type=ogr.OFTReal) -> int:
+    """
+    Find out if field exist in layer and if not, create it with specified field type.
+
+    Parameters
+    ----------
+    layer : ogr.Layer
+        Layer to search.
+    field_name : str
+        Field name to look for.
+    field_type : Any
+        Type of field to create if it does not exist.
+
+    Returns
+    -------
+    int
+        specifies index of the field either before or after creation.
+    """
+
+    index = layer.FindFieldIndex(field_name, True)
+
+    if index == -1:
+        layer.CreateField(ogr.FieldDefn(field_name, field_type))
+        index = layer.FindFieldIndex(field_name, True)
+
+    return index
