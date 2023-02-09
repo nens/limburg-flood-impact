@@ -5,20 +5,14 @@ from osgeo import ogr
 
 from ._functions import (find_or_create_field)
 
-
-def get_voldoet_aan_norm_classes() -> dict[str, str]:
-
-    file_path = Path(__file__).parent / "data" / "classificatie.csv"
-    classificate_ds: ogr.DataSource = ogr.Open(file_path.as_posix())
-    classificate_layer: ogr.Layer = classificate_ds.GetLayer()
-
-    classes = {}
-
-    feature: ogr.Feature
-    for feature in classificate_layer:
-        classes[feature.GetFieldAsString("Klasse")] = feature.GetFieldAsString("Voldoet aan norm")
-
-    return classes
+VOLDOET_AAN_NORM_CLASSES = {
+    "Geen risico": "Ja",
+    "Lokaal": "Ja",
+    "Gecombineerd": "Nader onderzoeken",
+    "Landelijk": "Nader onderzoeken",
+    "Stedelijk": "Ja",
+    "Landelijk en stedelijk": "Nader onderzoeken"
+}
 
 
 def test_against_flood_protection_norm(buildings_path: Path,
@@ -31,8 +25,6 @@ def test_against_flood_protection_norm(buildings_path: Path,
 
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
     flood_norm_layer: ogr.Layer = flood_norm_ds.GetLayer()
-
-    voldoet_aan_norm_classes = get_voldoet_aan_norm_classes()
 
     normgebied_t10_index = find_or_create_field(buildings_layer, "in_normgebied_t10", ogr.OFSTBoolean)
     normgebied_t25_index = find_or_create_field(buildings_layer, "in_normgebied_t25", ogr.OFSTBoolean)
@@ -85,7 +77,7 @@ def test_against_flood_protection_norm(buildings_path: Path,
 
         building_feature.SetField(normgebied_index, flood_norm)
         building_feature.SetField(voldoet_aan_norm_index,
-                                  voldoet_aan_norm_classes[building_feature.GetFieldAsString("toetsingsklasse")])
+                                  VOLDOET_AAN_NORM_CLASSES[building_feature.GetFieldAsString("toetsingsklasse")])
 
         buildings_layer.SetFeature(building_feature)
 
