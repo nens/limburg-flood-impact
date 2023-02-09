@@ -10,6 +10,10 @@ After the install tools `check_address`, `classify_area_wide_rain`, `classify_ru
 
 # Changelog
 
+## v.0.3.0
+
+- new tool `test_against_flood_protection_norm`
+
 ## v.0.2.3
 
 - descriptions and text changes
