@@ -11,7 +11,8 @@ VOLDOET_AAN_NORM_CLASSES = {
     "Gecombineerd": "Nader onderzoeken",
     "Landelijk": "Nader onderzoeken",
     "Stedelijk": "Ja",
-    "Landelijk en stedelijk": "Nader onderzoeken"
+    "Landelijk en stedelijk": "Nader onderzoeken",
+    "n.v.t.": "Ja"
 }
 
 
