@@ -18,8 +18,26 @@ Gebruikershandleiding: QGIS plugin
 Installatie
 ~~~~~~~~~~~
 
+*Afhankelijk van de distributiewijze*
+
+Na de installatie zal er in de Processing Toolbox in de categorie
+‘Limburg Flood Impact’ een aantal processing algorithms zijn toegevoegd.
+Deze dienen in een bepaalde volgorde te worden doorlopen. Zie hiervoor
+het stappenplan.
+
 Stappenplan
 ~~~~~~~~~~~
+
+1. Verzamel de benodigde data en voeg deze toe aan het QGIS project. Zie
+   voor meer details hierover de paragraaf ‘Invoer en uitvoer’.
+2. Voer achter elkaar de processing algorithms uit. Voor de juiste
+   volgorde en meer informatie, zie de paragraaf ‘Methode en
+   stappenplan’. Controleer na het uitvoeren van elke stap de attribute
+   table van de pandentabel.
+3. Als je niet kan programmeren maar dit proces wel verder wilt
+   automatiseren, dan kan dat binnen QGIS met de Graphical Modeler. Zie
+   hiervoor
+   https://docs.qgis.org/3.22/en/docs/user_manual/processing/modeler.html
 
 Gebruikershandleiding: Command line
 -----------------------------------
@@ -29,21 +47,29 @@ en moet je de python library ``limburg-flood-impact`` nodig.
 
 ``> pip install limburg-flood-impact``
 
-Vervolgens kan je de verschillende stappen uitvoeren door deze via
-python aan te roepen:
+Vervolgens kan je de verschillende stappen uitvoeren door het
+betreffende commando als volgt aan te roepen:
 
-``> python check python check_address.py -b path_to_buildings_data -a path_to_adress_data``
+``> check_address -b path_to_buildings_data -a path_to_adress_data``
 
 Meer informatie over de specifieke manier om elk script aan te roepen
 kan met het argument ``-h``:
 
-``> python check python check_address.py -h``
+``> check_address -h``
 
 Voor een uitgebreidere uitleg over de argumenten van deze scripts, zie
 onder “Invoer en uitvoer”
 
 Gebruikershandleiding: Python
 -----------------------------
+
+Installeer het python package limburg-flood-impact
+
+``> pip install limburg-flood-impact``
+
+Voer de stappen uit zoals beschreven in de paragraaf “Methode en
+stappenplan”. Let erop dat alle data voldoet aan de eisen die daaraan
+worden gesteld in “Invoer en uitvoer”.
 
 Invoer en uitvoer
 -----------------
@@ -82,6 +108,22 @@ Maximale waterdiepte (‘T10’, ‘T25’, ‘T100’)
   Nodatavalue is gedefinieerd - Projectie is Rijksdriehoekstelsel
   (Nieuw) (EPSG:28992)
 
+Normering regionale wateroverlast (‘flood protection norm’)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Beschrijving*: Polygonen die aangeven voor welke herhalingstijd het
+betreffende gebied beschermt moet zijn. Deze input moet een selectie
+zijn uit de laag “Normering regionale wateroverlast” van de WFS service
+“Provinciale beleidsplannen” van de provincie Limburg. *Geometrietype*:
+Polygon *Verplicht attribuut*: “NORM” *Bestandsformaat*: GeoPackage
+*Overige instructies*: Om deze gegegevens te verkrijgen: maak in QGIS
+verbinding met de WFS service
+https://portal.prvlimburg.nl/geodata/PROVINCIALE_BELEIDSPLANNEN/wfs? .
+Deze service bevat een groot aantal lagen. Voeg de laag “Normering
+regionale wateroverlast” toe aan het QGIS project. Maak een selectie op
+basis van het gebied waarvoor de analyse moet worden gedaan. Sla deze
+selectie op als GeoPackage.
+
 Methode en stappenplan
 ----------------------
 
@@ -96,9 +138,9 @@ toegevoegd.
 Gebruik
 ^^^^^^^
 
-*QGIS*: **Naam van het processing algorithm in QGIS**
+*QGIS*: Check Addresses
 
-*Command line*: ``python check_addresses.py -h``
+*Command line*: ``check_addresses -h``
 
 *Python*:
 
@@ -128,9 +170,12 @@ waarde False.
 Gebruik
 ^^^^^^^
 
-*QGIS*: **Naam van het processing algorithm in QGIS**
+*QGIS*: - Classify Area Wide Rain - Classify Rural Rain - Classify Urban
+Rain
 
-*Command line*: ``python classify_area_wide_rain.py -h``
+| *Command line*: - ``classify_area_wide_rain -h``
+| - ``classify_urban_rain -h``
+| - ``classify_rural_rain -h``
 
 *Python*:
 
@@ -207,11 +252,9 @@ herkomst”.
 Gebruik
 ^^^^^^^
 
-**DIT AANPASSEN ALS DIT ONDERDEEL GEIMPLEMENTEERD IS**
+*QGIS*: Combine Classification
 
-*QGIS*: **Naam van het processing algorithm in QGIS**
-
-*Command line*: ``python combine_classification.py -h``
+*Command line*: ``combine_classification -h``
 
 *Python*:
 
@@ -231,7 +274,7 @@ Algoritme
 
 In deze stap worden de tussenclassificaties per neerslaggebied vertaald
 naar 1 klasse per pand per bui. Dit wordt gedaan met de vertaaltabel
-**EXCELSHEET OPNEMEN IN DE REPO EN DAARNAAR VERWIJZEN**
+https://github.com/nens/limburg-flood-impact/blob/main/misc/classificatie.xlsx
 
 4. Toetsing aan de norm
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -241,33 +284,21 @@ naar 1 klasse per pand per bui. Dit wordt gedaan met de vertaaltabel
 Gebruik
 ^^^^^^^
 
-**DIT AANPASSEN ALS DIT ONDERDEEL GEIMPLEMENTEERD IS**
+*QGIS*: Test Against Flood Protection Norm
 
-*QGIS*: **Naam van het processing algorithm in QGIS**
-
-*Command line*: ``python classify_area_wide_rain.py -h``
+*Command line*: ``test_against_flood_protection_norm -h``
 
 *Python*:
 
 ::
 
-   from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain, classify_rural_rain, classify_urban_rain
+   from limburg_flood_impact.test_against_flood_protection_norm import test_against_flood_protection_norm
    from pathlib import Path
 
    buildings_path = Path("C:/Temp/buildings.gpkg")
-   t10_stedelijk_path = Path("C:/Temp/water_depth_t10_stedelijk.tif")
-   t10_landelijk_path = Path("C:/Temp/water_depth_t10_landelijk.tif")
-   t10_gebiedsbreed_path = Path("C:/Temp/water_depth_t10_gebiedsbreed.tif")
-   t25_stedelijk_path = Path("C:/Temp/water_depth_t25_stedelijk.tif")
-   t25_landelijk_path = Path("C:/Temp/water_depth_t25_landelijk.tif")
-   t25_gebiedsbreed_path = Path("C:/Temp/water_depth_t25_gebiedsbreed.tif")
-   t100_stedelijk_path = Path("C:/Temp/water_depth_t100_stedelijk.tif")
-   t100_landelijk_path = Path("C:/Temp/water_depth_t100_landelijk.tif")
-   t100_gebiedsbreed_path = Path("C:/Temp/water_depth_t100_gebiedsbreed.tif")
+   flood_norm_path = Path("C:/Temp/flood_protection_norm.gpkg")
 
-   classify_urban_rain(buildings_path, t10_stedelijk_path, t25_stedelijk_path, t100_stedelijk_path)
-   classify_rural_rain(buildings_path, t10_landelijk_path, t25_landelijk_path, t100_landelijk_path)
-   classify_area_wide_rain(buildings_path, t10_gebiedsbreed_path, t25_gebiedsbreed_path, t100_gebiedsbreed_path)
+   test_against_flood_protection_norm(buildings_path=buildings_path, flood_norm_path=flood_norm_path)
 
 .. _algoritme-3:
 
@@ -291,12 +322,5 @@ overgenomen in het attribuut “toetsingsklasse” - Als het pand de norm
 “Geen norm” heeft toegekend gekregen, wordt “n.v.t.” ingevuld in het
 attribuut “toetsingsklasse” - De toetsingsklasse wordt vervolgens
 vertaald naar “Voldoet aan norm” (ja/nader onderzoeken). Zie de
-vertaaltabel in de bijlage. - Nader onderzoek moet voor de betreffende
-panden uitwijzen: - Is het wateroverlastrisico reëel of een artefact de
-GIS analyse of van het hydrodynamisch rekenmodel? - Is de totale
-afstroming uit landelijk gebied hoger dan de drempelwaarde (750 m3 bij
-33 mm in 20 minuten, of 1250 m3 bij 47 mm in 2 uur)? - In de tool geven
-we de gebruiker de mogelijkheid een polygoon op te geven van het gebied
-waar de afstroming boven deze drempelwaarde uitkomt. Als het pand geheel
-binnen deze polygoon ligt en het attribuut “Voldoet aan norm” de waarde
-“nader onderzoeken” heeft, wordt “voldoet aan norm” geüpdate naar “nee”.
+vertaaltabel
+(https://github.com/nens/limburg-flood-impact/blob/main/misc/classificatie.xlsx)
