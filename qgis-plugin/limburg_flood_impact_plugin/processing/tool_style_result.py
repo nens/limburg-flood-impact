@@ -13,9 +13,9 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
     FIELD = "Field"
 
     fields = ["landelijk_t10", "landelijk_t25", "landelijk_t100",
-              "stedelijk_10", "stedelijk_t25", "stedelijk_t100",
-              "gebiedsbreed_10", "gebiedsbreed_t25", "gebiedsbreed_t100",
-              "klasse_t10", "klasse_25", "klasse_25"]
+              "stedelijk_t10", "stedelijk_t25", "stedelijk_t100",
+              "gebiedsbreed_t10", "gebiedsbreed_t25", "gebiedsbreed_t100",
+              "klasse_t10", "klasse_t25", "klasse_t25"]
 
     def initAlgorithm(self, config=None):
 
@@ -57,11 +57,26 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
 
         file_name = "klasse.qml"
 
-        if field_to_style in ["landelijk_t10", "landelijk_t25", "landelijk_t100", "stedelijk_10", "stedelijk_t25", "stedelijk_t100"]:
+        if field_to_style in [
+            "landelijk_t10",
+            "landelijk_t25",
+            "landelijk_t100",
+            "stedelijk_t10",
+            "stedelijk_t25",
+            "stedelijk_t100"
+        ]:
             file_name = "landelijk_stedelijk.qml"
-        elif field_to_style in ["gebiedsbreed_10", "gebiedsbreed_t25", "gebiedsbreed_t100"]:
+        elif field_to_style in [
+            "gebiedsbreed_t10",
+            "gebiedsbreed_t25",
+            "gebiedsbreed_t100"
+        ]:
             file_name = "gebiedsbreed.qml"
-        elif field_to_style in ["klasse_t10", "klasse_25", "klasse_100"]:
+        elif field_to_style in [
+            "klasse_t10",
+            "klasse_t25",
+            "klasse_t100"
+        ]:
             file_name = "klasse.qml"
 
         qml_file = Path(__file__).parent.parent / "style" / file_name
