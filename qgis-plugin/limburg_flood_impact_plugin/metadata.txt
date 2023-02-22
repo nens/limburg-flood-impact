@@ -6,7 +6,7 @@
 name=Limburg Flood Impact
 qgisMinimumVersion=3.22
 description=Limburg Flood Impact Plugin.
-version=0.3.1
+version=0.3.2
 author=Lutra Consulting Ltd for Nelen & Schuurmans
 email=info@nelen-schuurmans.nl
 
