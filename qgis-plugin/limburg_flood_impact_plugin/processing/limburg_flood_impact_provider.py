@@ -7,6 +7,7 @@ from .tool_rural_rain import ClassifyRuralRainAlgorithm
 from .tool_area_wide_rain import ClassifyAreaWideRainAlgorithm
 from .tool_combine_classification import CombineClassificationAlgorithm
 from .tool_test_against_flood_protection_norm import TestAgainstFloodProtectionNormAlgorithm
+from .tool_style_result import StyleResultAlgorithm
 
 
 class LimburgFloodImpactProvider(QgsProcessingProvider):
@@ -24,6 +25,7 @@ class LimburgFloodImpactProvider(QgsProcessingProvider):
         self.addAlgorithm(ClassifyRuralRainAlgorithm())
         self.addAlgorithm(ClassifyAreaWideRainAlgorithm())
         self.addAlgorithm(TestAgainstFloodProtectionNormAlgorithm())
+        self.addAlgorithm(StyleResultAlgorithm())
 
     def id(self):
         return "limburgfloodimpact"
