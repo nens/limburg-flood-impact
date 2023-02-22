@@ -5,7 +5,7 @@ PACKAGE_DIR=$DIR/../$PYTHON_PACKAGE_DIR
 DEST_BUILD="$PACKAGE_DIR/build"
 
 #render rst file with readme for package - needs Pandoc
-pandoc --to=rst -o $PACKAGE_DIR/README.rst README.md
+pandoc --to=rst -o $PACKAGE_DIR/README.rst ../README.md
 
 # remove build dir to avoid having multiple versions there
 rm -rf DEST_BUILD
