@@ -204,6 +204,7 @@ def classify_area_wide_rain(buildings_path: Path,
                           t10_masked,
                           t25_masked,
                           t100_masked,
+                          field_name="gebiedsbreed",
                           callback_function=callback_function,
                           qgis_feedback=qgis_feedback)
 
