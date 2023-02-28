@@ -24,6 +24,11 @@ if [ ! -d "$SRC" ]; then
 fi
 
 rm -rf $DEST_BUILD
+ZIP_FILE=$DEST/"$PLUGIN.zip"
+if test -f "$ZIP_FILE"; then
+    rm $ZIP_FILE
+fi
+
 mkdir -p $DEST_BUILD
 
 cp -R $SRC/* $DEST_BUILD/
