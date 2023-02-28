@@ -3,12 +3,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PYTHON_PACKAGE_DIR=python-package
 PACKAGE_DIR=$DIR/../$PYTHON_PACKAGE_DIR
 DEST_BUILD="$PACKAGE_DIR/build"
+DEST_DIST="$PACKAGE_DIR/dist"
 
 #render rst file with readme for package - needs Pandoc
 pandoc --to=rst -o $PACKAGE_DIR/README.rst ../README.md
 
 # remove build dir to avoid having multiple versions there
 rm -rf DEST_BUILD
+rm -rf DEST_DIST
 
 # build python package and upload to PyPi - authentication for PyPi needs to be set
 cd $PACKAGE_DIR
