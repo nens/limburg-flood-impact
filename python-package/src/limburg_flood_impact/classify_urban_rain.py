@@ -143,6 +143,7 @@ def classify_urban_rain(buildings_path: Path,
                           t10_masked,
                           t25_masked,
                           t100_masked,
+                          field_name="stedelijk",
                           callback_function=callback_function,
                           qgis_feedback=qgis_feedback)
 
