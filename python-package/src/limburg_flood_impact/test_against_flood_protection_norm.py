@@ -27,9 +27,9 @@ def test_against_flood_protection_norm(buildings_path: Path,
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
     flood_norm_layer: ogr.Layer = flood_norm_ds.GetLayer()
 
-    normgebied_t10_index = find_or_create_field(buildings_layer, "in_normgebied_t10", ogr.OFSTBoolean)
-    normgebied_t25_index = find_or_create_field(buildings_layer, "in_normgebied_t25", ogr.OFSTBoolean)
-    normgebied_t100_index = find_or_create_field(buildings_layer, "in_normgebied_t100", ogr.OFSTBoolean)
+    normgebied_t10_index = find_or_create_field(buildings_layer, "in_normgebied_t10", ogr.OFTString)
+    normgebied_t25_index = find_or_create_field(buildings_layer, "in_normgebied_t25", ogr.OFTString)
+    normgebied_t100_index = find_or_create_field(buildings_layer, "in_normgebied_t100", ogr.OFTString)
     normgebied_index = find_or_create_field(buildings_layer, "normgebied", ogr.OFTString)
     toetsingsklasse_index = find_or_create_field(buildings_layer, "toetsingsklasse", ogr.OFTString)
     voldoet_aan_norm_index = find_or_create_field(buildings_layer, "voldoet_aan_norm", ogr.OFTString)
