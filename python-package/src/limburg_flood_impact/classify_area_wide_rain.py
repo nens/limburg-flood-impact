@@ -7,7 +7,15 @@ from osgeo import ogr, gdal
 
 from ._functions import RASTER_DRIVER, VECTOR_DRIVER
 from ._functions import (flood_mask, delete_all_features_from_layer, raster_coordinates,
-                         world_coordinates, get_water_height_array)
+                         world_coordinates, get_water_height_array, find_or_create_field)
+
+
+def field_name_with_puddles(type: str) -> str:
+    return f"max_waterdiepte_gebiedsbreed_incl_kleine_plassen_{type}"
+
+
+def field_name_without_puddles(type: str) -> str:
+    return f"max_waterdiepte_gebiedsbreed_excl_kleine_plassen_{type}"
 
 
 def classify_water_height(buildings_ds: gdal.Dataset,
@@ -23,21 +31,17 @@ def classify_water_height(buildings_ds: gdal.Dataset,
 
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
-    t10_index = buildings_layer.FindFieldIndex(f"{field_name}_t10", True)
-    t25_index = buildings_layer.FindFieldIndex(f"{field_name}_t25", True)
-    t100_index = buildings_layer.FindFieldIndex(f"{field_name}_t100", True)
+    t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
+    t25_index = find_or_create_field(buildings_layer, f"{field_name}_t25", ogr.OFTString)
+    t100_index = find_or_create_field(buildings_layer, f"{field_name}_t100", ogr.OFTString)
 
-    if t10_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t10", ogr.OFTString))
-        t10_index = buildings_layer.FindFieldIndex(f"{field_name}_t10", True)
+    wdp_t10_index = find_or_create_field(buildings_layer, field_name_with_puddles("t10"), ogr.OFTReal)
+    wdp_t25_index = find_or_create_field(buildings_layer, field_name_with_puddles("t25"), ogr.OFTReal)
+    wdp_t100_index = find_or_create_field(buildings_layer, field_name_with_puddles("t100"), ogr.OFTReal)
 
-    if t25_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t25", ogr.OFTString))
-        t25_index = buildings_layer.FindFieldIndex(f"{field_name}_t25", True)
-
-    if t100_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t100", ogr.OFTString))
-        t100_index = buildings_layer.FindFieldIndex(f"{field_name}_t100", True)
+    wd_t10_index = find_or_create_field(buildings_layer, field_name_without_puddles("t10"), ogr.OFTReal)
+    wd_t25_index = find_or_create_field(buildings_layer, field_name_without_puddles("t25"), ogr.OFTReal)
+    wd_t100_index = find_or_create_field(buildings_layer, field_name_without_puddles("t100"), ogr.OFTReal)
 
     inv_gt = gdal.InvGeoTransform(t10.GetGeoTransform())
     gt = t10.GetGeoTransform()
@@ -101,6 +105,14 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         t10_water = get_water_height_array(t10_band, rMinX, rMaxX, rMinY, rMaxY)
         t25_water = get_water_height_array(t25_band, rMinX, rMaxX, rMinY, rMaxY)
         t100_water = get_water_height_array(t100_band, rMinX, rMaxX, rMinY, rMaxY)
+
+        feature.SetField(wdp_t10_index, np.max(t10_water_with_puddles))
+        feature.SetField(wdp_t25_index, np.max(t25_water_with_puddles))
+        feature.SetField(wdp_t100_index, np.max(t100_water_with_puddles))
+
+        feature.SetField(wd_t10_index, np.max(t10_water))
+        feature.SetField(wd_t25_index, np.max(t25_water))
+        feature.SetField(wd_t100_index, np.max(t100_water))
 
         feature.SetField(
             t10_index,

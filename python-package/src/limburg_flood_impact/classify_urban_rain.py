@@ -7,7 +7,7 @@ from osgeo import ogr, gdal
 
 from ._functions import RASTER_DRIVER, VECTOR_DRIVER
 from ._functions import (flood_mask, delete_all_features_from_layer, raster_coordinates,
-                         world_coordinates, get_water_height_array)
+                         world_coordinates, get_water_height_array, find_or_create_field)
 
 
 def classify_water_height(buildings_ds: gdal.Dataset,
@@ -20,21 +20,13 @@ def classify_water_height(buildings_ds: gdal.Dataset,
 
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
-    t10_index = buildings_layer.FindFieldIndex(f"{field_name}_t10", True)
-    t25_index = buildings_layer.FindFieldIndex(f"{field_name}_t25", True)
-    t100_index = buildings_layer.FindFieldIndex(f"{field_name}_t100", True)
+    t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
+    t25_index = find_or_create_field(buildings_layer, f"{field_name}_t25", ogr.OFTString)
+    t100_index = find_or_create_field(buildings_layer, f"{field_name}_t100", ogr.OFTString)
 
-    if t10_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t10", ogr.OFTString))
-        t10_index = buildings_layer.FindFieldIndex(f"{field_name}_t10", True)
-
-    if t25_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t25", ogr.OFTString))
-        t25_index = buildings_layer.FindFieldIndex(f"{field_name}_t25", True)
-
-    if t100_index == -1:
-        buildings_layer.CreateField(ogr.FieldDefn(f"{field_name}_t100", ogr.OFTString))
-        t100_index = buildings_layer.FindFieldIndex(f"{field_name}_t100", True)
+    water_depth_t10_index = find_or_create_field(buildings_layer, f"max_waterdiepte_{field_name}_t10", ogr.OFTReal)
+    water_depth_t25_index = find_or_create_field(buildings_layer, f"max_waterdiepte_{field_name}_t25", ogr.OFTReal)
+    water_depth_t100_index = find_or_create_field(buildings_layer, f"max_waterdiepte_{field_name}_t100", ogr.OFTReal)
 
     inv_gt = gdal.InvGeoTransform(t10.GetGeoTransform())
     gt = t10.GetGeoTransform()
@@ -47,7 +39,6 @@ def classify_water_height(buildings_ds: gdal.Dataset,
     memory_layer: ogr.Layer = memory_ds.CreateLayer("geometry_layer",
                                                     buildings_layer.GetSpatialRef(),
                                                     ogr.wkbPolygon)
-
     feature: ogr.Feature
     i = 0
     for feature in buildings_layer:
@@ -88,9 +79,17 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         t25_water = get_water_height_array(t25_band, rMinX, rMaxX, rMinY, rMaxY)
         t100_water = get_water_height_array(t100_band, rMinX, rMaxX, rMinY, rMaxY)
 
-        feature.SetField(t10_index, column_value(np.max(feature_rasterized * t10_water)))
-        feature.SetField(t25_index, column_value(np.max(feature_rasterized * t25_water)))
-        feature.SetField(t100_index, column_value(np.max(feature_rasterized * t100_water)))
+        t10_max_water_height = np.max(feature_rasterized * t10_water)
+        t25_max_water_height = np.max(feature_rasterized * t25_water)
+        t100_max_water_height = np.max(feature_rasterized * t100_water)
+
+        feature.SetField(water_depth_t10_index, t10_max_water_height)
+        feature.SetField(water_depth_t25_index, t25_max_water_height)
+        feature.SetField(water_depth_t100_index, t100_max_water_height)
+
+        feature.SetField(t10_index, column_value(t10_max_water_height))
+        feature.SetField(t25_index, column_value(t25_max_water_height))
+        feature.SetField(t100_index, column_value(t100_max_water_height))
 
         buildings_layer.SetFeature(feature)
 
