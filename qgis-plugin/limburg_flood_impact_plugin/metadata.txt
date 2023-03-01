@@ -14,6 +14,7 @@ about=Tooling made for Waterschap Limburg's "Water in Balans" progamme to determ
 
 tracker=https://github.com/nens/limburg-flood-impact/issues
 repository=https://github.com/nens/limburg-flood-impact
+homepage=https://github.com/nens/limburg-flood-impact
 # End of mandatory metadata
 
 # Recommended items:
