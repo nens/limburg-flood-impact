@@ -12,10 +12,20 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
     BUILDINGS_LAYER = "BuildingsLayer"
     FIELD = "Field"
 
-    fields = ["landelijk_t10", "landelijk_t25", "landelijk_t100",
-              "stedelijk_t10", "stedelijk_t25", "stedelijk_t100",
-              "gebiedsbreed_t10", "gebiedsbreed_t25", "gebiedsbreed_t100",
-              "klasse_t10", "klasse_t25", "klasse_t25"]
+    fields = [
+        "landelijk_t10",
+        "landelijk_t25",
+        "landelijk_t100",
+        "stedelijk_t10",
+        "stedelijk_t25",
+        "stedelijk_t100",
+        "gebiedsbreed_t10",
+        "gebiedsbreed_t25",
+        "gebiedsbreed_t100",
+        "klasse_t10",
+        "klasse_t25",
+        "klasse_t100"
+    ]
 
     def initAlgorithm(self, config=None):
 
