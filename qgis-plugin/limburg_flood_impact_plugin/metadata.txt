@@ -6,11 +6,11 @@
 name=Limburg Flood Impact
 qgisMinimumVersion=3.22
 description=Limburg Flood Impact Plugin.
-version=0.4.1
+version=1.0.0
 author=Lutra Consulting Ltd for Nelen & Schuurmans
 email=info@nelen-schuurmans.nl
 
-about=Tooling made for Waterschap Limburg's "Water in Balans" progamme to determine the flood risk of buildings and the origin of the flood water, on the basis of a set of maximum water depth maps (rasters) and buildings (polygons).
+about=Tooling made for Waterschap Limburg's "Water in Balans" progamme to determine the flood risk of buildings and the origin of the flood water, on the basis of a set of maximum water depth maps (rasters) and buildings (polygons). </br></br><a href="https://www.flaticon.com/free-icons/flood" title="flood icons">Flood icons created by Freepik - Flaticon</a>
 
 tracker=https://github.com/nens/limburg-flood-impact/issues
 repository=https://github.com/nens/limburg-flood-impact
@@ -39,7 +39,8 @@ deprecated=False
 # plugin_dependencies=
 
 # Category of the plugin: Raster, Vector, Database or Web
-# category=
+#category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False
+icon=icon.png
