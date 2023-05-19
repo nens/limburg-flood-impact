@@ -7,7 +7,8 @@ from osgeo import ogr, gdal
 
 from ._functions import RASTER_DRIVER, VECTOR_DRIVER
 from ._functions import (flood_mask, delete_all_features_from_layer, raster_coordinates,
-                         world_coordinates, get_water_height_array, find_or_create_field)
+                         world_coordinates, get_water_height_array, find_or_create_field,
+                         get_extent)
 
 
 def classify_water_height(buildings_ds: gdal.Dataset,
@@ -39,6 +40,9 @@ def classify_water_height(buildings_ds: gdal.Dataset,
     memory_layer: ogr.Layer = memory_ds.CreateLayer("geometry_layer",
                                                     buildings_layer.GetSpatialRef(),
                                                     ogr.wkbPolygon)
+
+    raster_bbox = get_extent(t10)
+
     feature: ogr.Feature
     i = 0
     for feature in buildings_layer:
@@ -50,6 +54,13 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         delete_all_features_from_layer(memory_layer)
 
         geom: ogr.Geometry = feature.GetGeometryRef().Buffer(1)
+
+        if not raster_bbox.Intersect(geom):
+            continue
+
+        if not geom.Within(raster_bbox):
+            geom = geom.Intersection(raster_bbox)
+
         minX, maxX, minY, maxY = geom.GetEnvelope()
 
         new_feature: ogr.Feature = ogr.Feature(memory_layer.GetLayerDefn())
