@@ -94,9 +94,9 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         t25_max_water_height = np.max(feature_rasterized * t25_water)
         t100_max_water_height = np.max(feature_rasterized * t100_water)
 
-        feature.SetField(water_depth_t10_index, t10_max_water_height)
-        feature.SetField(water_depth_t25_index, t25_max_water_height)
-        feature.SetField(water_depth_t100_index, t100_max_water_height)
+        feature.SetField(water_depth_t10_index, float(t10_max_water_height))
+        feature.SetField(water_depth_t25_index, float(t25_max_water_height))
+        feature.SetField(water_depth_t100_index, float(t100_max_water_height))
 
         feature.SetField(t10_index, column_value(t10_max_water_height))
         feature.SetField(t25_index, column_value(t25_max_water_height))
