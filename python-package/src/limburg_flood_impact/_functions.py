@@ -222,7 +222,7 @@ def multiply_raster_by_mask(raster_ds: gdal.Dataset, mask: np.ndarray) -> gdal.D
 
     file_name = "with_mask" + ds_path.stem
 
-    new_raster_ds = create_empty_raster(file_name, raster_ds, gdal.GDT_Float64)
+    new_raster_ds = create_empty_raster(file_name, raster_ds, raster_ds.GetRasterBand(1).DataType)
 
     band: gdal.Band = new_raster_ds.GetRasterBand(1)
 
@@ -271,7 +271,7 @@ def flood_mask(flood_raster_ds: gdal.Dataset,
                                         value_to_select=1,
                                         min_area=minimal_area_of_water_pond)
 
-    rasterized_mask = rasterize_layer_mask(selected_areas_ds, flood_raster_ds)
+    rasterized_mask = rasterize_layer_mask(selected_areas_ds, flood_raster_ds, flood_raster_ds.GetRasterBand(1).DataType)
 
     raster = multiply_raster_by_mask(flood_raster_ds, rasterized_mask)
 
