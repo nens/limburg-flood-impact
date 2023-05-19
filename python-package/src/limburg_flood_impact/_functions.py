@@ -78,6 +78,8 @@ def create_empty_raster(name: str,
     gdal.Dataset
         Dataset with single band.
     """
+
+    # TIFF_DRIVER.Create(f"{TMP_FOLDER}/{name}.tiff",
     ds: gdal.Dataset = RASTER_DRIVER.Create(name,
                                             template_raster.RasterXSize,
                                             template_raster.RasterYSize,
