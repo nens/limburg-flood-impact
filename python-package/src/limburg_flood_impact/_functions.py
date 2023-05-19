@@ -450,3 +450,23 @@ def find_or_create_field(layer: ogr.Layer,
         index = layer.FindFieldIndex(field_name, True)
 
     return index
+
+
+def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
+    """ Return list of corner coordinates from a gdal Dataset """
+    xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
+    width, height = ds.RasterXSize, ds.RasterYSize
+    xmax = xmin + width * xpixel
+    ymin = ymax + height * ypixel
+
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    ring.AddPoint(xmin, ymin)
+    ring.AddPoint(xmax, ymin)
+    ring.AddPoint(xmax, ymax)
+    ring.AddPoint(xmin, ymax)
+    ring.AddPoint(xmin, ymin)
+
+    polygon = ogr.Geometry(ogr.wkbPolygon)
+    polygon.AddGeometry(ring)
+
+    return polygon
