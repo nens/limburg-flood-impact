@@ -170,7 +170,7 @@ def select_features(ds: ogr.DataSource,
 
 def rasterize_layer_mask(ds: ogr.DataSource,
                          template_raster: gdal.Dataset,
-                         data_type=gdal.GDT_Float64) -> np.ndarray:
+                         data_type=gdal.GDT_Float32) -> np.ndarray:
     """
     Converts ds into binary raster mask according to template raster.
 
@@ -179,7 +179,7 @@ def rasterize_layer_mask(ds: ogr.DataSource,
     ds : ogr.DataSource
     template_raster : gdal.Dataset
     data_type : _type_, optional
-        by default gdal.GDT_Float64
+        by default gdal.GDT_Float32
 
     Returns
     -------
