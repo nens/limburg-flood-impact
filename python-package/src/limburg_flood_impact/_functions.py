@@ -1,13 +1,24 @@
 from pathlib import Path
 import argparse
+import tempfile
+import uuid
+import shutil
 
 import numpy as np
 
 from osgeo import ogr, gdal
 
+TIFF_DRIVER: gdal.Driver = gdal.GetDriverByName("GTiff")
 RASTER_DRIVER: gdal.Driver = gdal.GetDriverByName("MEM")
 VECTOR_DRIVER: ogr.Driver = ogr.GetDriverByName("MEMORY")
 COLUMN_RASTER_VALUE = "rasterValue"
+TMP_FOLDER = f"{tempfile.gettempdir()}/{str(uuid.uuid4()).split('-')[0]}"
+
+
+def remove_tmp_folder():
+    folder = Path(TMP_FOLDER)
+    if folder.exists():
+        shutil.rmtree(folder)
 
 
 def convert_to_binary_raster(ds: gdal.Dataset, values_below_as_zero: float = None) -> gdal.Dataset:
