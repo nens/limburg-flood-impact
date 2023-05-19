@@ -316,7 +316,7 @@ def raster_coordinates(inputX: float,
         x = int(round(x + 0.5))
         y = int(round(y + 0.5))
 
-    return (x, y)
+    return (min(x, y), max(x, y))
 
 
 def world_coordinates(inputX: float, inputY: float, gt) -> tuple:
