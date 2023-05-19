@@ -106,13 +106,13 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         t25_water = get_water_height_array(t25_band, rMinX, rMaxX, rMinY, rMaxY)
         t100_water = get_water_height_array(t100_band, rMinX, rMaxX, rMinY, rMaxY)
 
-        feature.SetField(wdp_t10_index, np.max(t10_water_with_puddles))
-        feature.SetField(wdp_t25_index, np.max(t25_water_with_puddles))
-        feature.SetField(wdp_t100_index, np.max(t100_water_with_puddles))
+        feature.SetField(wdp_t10_index, float(np.max(t10_water_with_puddles)))
+        feature.SetField(wdp_t25_index, float(np.max(t25_water_with_puddles)))
+        feature.SetField(wdp_t100_index, float(np.max(t100_water_with_puddles)))
 
-        feature.SetField(wd_t10_index, np.max(t10_water))
-        feature.SetField(wd_t25_index, np.max(t25_water))
-        feature.SetField(wd_t100_index, np.max(t100_water))
+        feature.SetField(wd_t10_index, float(np.max(t10_water)))
+        feature.SetField(wd_t25_index, float(np.max(t25_water)))
+        feature.SetField(wd_t100_index, float(np.max(t100_water)))
 
         feature.SetField(
             t10_index,
