@@ -275,6 +275,11 @@ def flood_mask(flood_raster_ds: gdal.Dataset,
 
     raster = multiply_raster_by_mask(flood_raster_ds, rasterized_mask)
 
+    binary_raster_ds = None
+    vectorized_raster_ds = None
+    selected_areas_ds = None
+    rasterized_mask = None
+
     return raster
 
 
