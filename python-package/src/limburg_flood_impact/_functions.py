@@ -3,6 +3,7 @@ import argparse
 import tempfile
 import uuid
 import shutil
+import sys
 
 import numpy as np
 
@@ -511,3 +512,10 @@ def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float
     return False
 
 
+def print_progress_bar(count_value, total, suffix=''):
+    bar_length = 100
+    filled_up_Length = int(round(bar_length * count_value / float(total)))
+    percentage = round(100.0 * count_value / float(total), 1)
+    bar = '=' * filled_up_Length + '-' * (bar_length - filled_up_Length)
+    sys.stdout.write(f'[{bar}] {percentage}%   {suffix}\r')
+    sys.stdout.flush()
