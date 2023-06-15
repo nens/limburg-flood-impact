@@ -482,3 +482,29 @@ def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
     polygon.AddGeometry(ring)
 
     return polygon
+
+
+def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float) -> bool:
+    """
+    Sets value of field index if the new value is higher then previously stored value. 
+    Returns `True` if the field has changed and `False` if it has not.
+
+    Parameters
+    ----------
+    feature : ogr.Feature
+    field_index : int
+    new_value : float
+
+    Returns
+    -------
+    bool
+    """
+    old_value = feature.GetFieldAsDouble(field_index)
+
+    if new_value > old_value:
+        feature.SetField(field_index, new_value)
+        return True
+
+    return False
+
+
