@@ -348,9 +348,8 @@ def world_coordinates(inputX: float, inputY: float, gt) -> tuple:
     tuple
         x, y
     """
-    x, y = \
-        (gt[0] + gt[1] * inputX + gt[2] * inputY), \
-        (gt[3] + gt[4] * inputX + gt[5] * inputY)
+    x = (gt[0] + gt[1] * inputX + gt[2] * inputY)
+    y = (gt[3] + gt[4] * inputX + gt[5] * inputY)
     return x, y
 
 
