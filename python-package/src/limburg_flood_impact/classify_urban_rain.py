@@ -1,24 +1,31 @@
-from typing import Callable
 from pathlib import Path
+from typing import Callable
 
 import numpy as np
+from osgeo import gdal, ogr
 
-from osgeo import ogr, gdal
+from ._functions import (
+    RASTER_DRIVER,
+    VECTOR_DRIVER,
+    delete_all_features_from_layer,
+    find_or_create_field,
+    flood_mask,
+    get_extent,
+    get_water_height_array,
+    raster_coordinates,
+    world_coordinates,
+)
 
-from ._functions import RASTER_DRIVER, VECTOR_DRIVER
-from ._functions import (flood_mask, delete_all_features_from_layer, raster_coordinates,
-                         world_coordinates, get_water_height_array, find_or_create_field,
-                         get_extent)
 
-
-def classify_water_height(buildings_ds: gdal.Dataset,
-                          t10: gdal.Dataset,
-                          t25: gdal.Dataset,
-                          t100: gdal.Dataset,
-                          field_name: str = "stedelijk",
-                          callback_function: Callable[[float], None] = None,
-                          qgis_feedback=None):
-
+def classify_water_height(
+    buildings_ds: gdal.Dataset,
+    t10: gdal.Dataset,
+    t25: gdal.Dataset,
+    t100: gdal.Dataset,
+    field_name: str = "stedelijk",
+    callback_function: Callable[[float], None] = None,
+    qgis_feedback=None,
+):
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
     t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
@@ -37,16 +44,13 @@ def classify_water_height(buildings_ds: gdal.Dataset,
     t100_band: gdal.Band = t100.GetRasterBand(1)
 
     memory_ds: ogr.DataSource = VECTOR_DRIVER.CreateDataSource("ds")
-    memory_layer: ogr.Layer = memory_ds.CreateLayer("geometry_layer",
-                                                    buildings_layer.GetSpatialRef(),
-                                                    ogr.wkbPolygon)
+    memory_layer: ogr.Layer = memory_ds.CreateLayer("geometry_layer", buildings_layer.GetSpatialRef(), ogr.wkbPolygon)
 
     raster_bbox = get_extent(t10)
 
     feature: ogr.Feature
     i = 0
     for feature in buildings_layer:
-
         if qgis_feedback is not None:
             if qgis_feedback.isCanceled():
                 break
@@ -70,19 +74,24 @@ def classify_water_height(buildings_ds: gdal.Dataset,
         rMinX, rMaxY = raster_coordinates(minX, maxY, inv_gt)
         rMaxX, rMinY = raster_coordinates(maxX, minY, inv_gt, False)
 
-        feature_raster_ds: gdal.Dataset = RASTER_DRIVER.Create("geom_raster",
-                                                               int(rMaxX - rMinX),
-                                                               int(rMinY - rMaxY),
-                                                               bands=1,
-                                                               eType=gdal.GDT_Float64)
+        feature_raster_ds: gdal.Dataset = RASTER_DRIVER.Create(
+            "geom_raster",
+            int(rMaxX - rMinX),
+            int(rMinY - rMaxY),
+            bands=1,
+            eType=gdal.GDT_Float64,
+        )
         t_coords = world_coordinates(rMinX, rMaxY, gt)
         feature_raster_ds.SetGeoTransform([t_coords[0], gt[1], gt[2], t_coords[1], gt[4], gt[5]])
         feature_raster_ds.SetProjection(t10.GetProjection())
 
-        gdal.RasterizeLayer(feature_raster_ds, [1],
-                            memory_layer,
-                            burn_values=[1],
-                            options=["ALL_TOUCHED=TRUE"])
+        gdal.RasterizeLayer(
+            feature_raster_ds,
+            [1],
+            memory_layer,
+            burn_values=[1],
+            options=["ALL_TOUCHED=TRUE"],
+        )
 
         feature_rasterized = feature_raster_ds.GetRasterBand(1).ReadAsArray()
 
@@ -119,12 +128,15 @@ def column_value(value: float) -> str:
         return "Geen risico"
 
 
-def classify_urban_rain(buildings_path: Path,
-                        t10: Path,
-                        t25: Path,
-                        t100: Path,
-                        callback_function: Callable[[float], None] = None,
-                        qgis_feedback=None):
+def classify_urban_rain(
+    buildings_path: Path,
+    t10: Path,
+    t25: Path,
+    t100: Path,
+    callback_function: Callable[[float], None] = None,
+    qgis_feedback=None,
+):
+    gdal.UseExceptions()
 
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
 
@@ -150,15 +162,20 @@ def classify_urban_rain(buildings_path: Path,
         if qgis_feedback.isCanceled():
             return
 
-    classify_water_height(buildings_ds,
-                          t10_masked,
-                          t25_masked,
-                          t100_masked,
-                          field_name="stedelijk",
-                          callback_function=callback_function,
-                          qgis_feedback=qgis_feedback)
+    classify_water_height(
+        buildings_ds,
+        t10_masked,
+        t25_masked,
+        t100_masked,
+        field_name="stedelijk",
+        callback_function=callback_function,
+        qgis_feedback=qgis_feedback,
+    )
 
     buildings_ds = None
     t10_ds = None
     t25_ds = None
     t100_ds = None
+    t10_masked = None
+    t25_masked = None
+    t100_masked = None
