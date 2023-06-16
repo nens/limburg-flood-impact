@@ -23,7 +23,9 @@ class ClassifyRuralRainAlgorithm(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
-                self.BUILDINGS_LAYER, "Buildings Layer", [QgsProcessing.SourceType.TypeVectorPolygon]
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 

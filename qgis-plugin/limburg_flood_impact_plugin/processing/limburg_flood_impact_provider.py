@@ -6,13 +6,14 @@ from .tool_urban_rain import ClassifyUrbanRainAlgorithm
 from .tool_rural_rain import ClassifyRuralRainAlgorithm
 from .tool_area_wide_rain import ClassifyAreaWideRainAlgorithm
 from .tool_combine_classification import CombineClassificationAlgorithm
-from .tool_test_against_flood_protection_norm import TestAgainstFloodProtectionNormAlgorithm
+from .tool_test_against_flood_protection_norm import (
+    TestAgainstFloodProtectionNormAlgorithm,
+)
 from .tool_style_result import StyleResultAlgorithm
 from .utils import get_icon_path
 
 
 class LimburgFloodImpactProvider(QgsProcessingProvider):
-
     def __init__(self):
         super().__init__()
 

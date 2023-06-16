@@ -1,12 +1,19 @@
 from pathlib import Path
 
-from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWriter,
-                       QgsProcessingParameterFeatureSource, QgsProcessingFeedback,
-                       QgsProcessingContext)
+from qgis.core import (
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsVectorFileWriter,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingFeedback,
+    QgsProcessingContext,
+)
 
-from limburg_flood_impact.test_against_flood_protection_norm import test_against_flood_protection_norm
+from limburg_flood_impact.test_against_flood_protection_norm import (
+    test_against_flood_protection_norm,
+)
 
-from .utils import (has_field, reload_layer_in_project)
+from .utils import has_field, reload_layer_in_project
 
 
 class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
@@ -17,12 +24,20 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.BUILDINGS_LAYER, "Buildings Layer",
-                                                [QgsProcessing.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.TypeVectorPolygon],
+            )
+        )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.FLOOD_LAYER, "Flood Protection Norm Layer",
-                                                [QgsProcessing.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.FLOOD_LAYER,
+                "Flood Protection Norm Layer",
+                [QgsProcessing.TypeVectorPolygon],
+            )
+        )
 
     def checkParameterValues(self, parameters, context):
 
@@ -34,7 +49,10 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
             return False, "Buildings Layer data source has more than one layer."
 
         if 1 < flood_layer.dataProvider().subLayerCount():
-            return False, "Flood Protection Norm Layer data source has more than one layer."
+            return (
+                False,
+                "Flood Protection Norm Layer data source has more than one layer.",
+            )
 
         field_exist, msg = has_field(buildings_layer, "identificatie")
 
@@ -43,8 +61,7 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
 
         return super().checkParameterValues(parameters, context)
 
-    def processAlgorithm(self, parameters, context: QgsProcessingContext,
-                         feedback: QgsProcessingFeedback):
+    def processAlgorithm(self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback):
 
         self.feedback = feedback
 
@@ -53,24 +70,30 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
             self.BUILDINGS_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
-        floods_protection_datasource, _ = self.parameterAsCompatibleSourceLayerPathAndLayerName(
+        (floods_protection_datasource, _,) = self.parameterAsCompatibleSourceLayerPathAndLayerName(
             parameters,
             self.FLOOD_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
-        test_against_flood_protection_norm(Path(buildings_datasource),
-                                           Path(floods_protection_datasource),
-                                           self.set_feedback_percent,
-                                           self.feedback)
+        test_against_flood_protection_norm(
+            Path(buildings_datasource),
+            Path(floods_protection_datasource),
+            self.set_feedback_percent,
+            self.feedback,
+        )
 
         if not self.feedback.isCanceled():
             self.feedback.pushInfo("Column with validation successfully added!")
         else:
-            self.feedback.pushWarning("Calculation did not finish, due to user interruption. Only part of the values was calculated.")
+            self.feedback.pushWarning(
+                "Calculation did not finish, due to user interruption. Only part of the values was calculated."
+            )
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         reload_layer_in_project(buildings_layer.id())

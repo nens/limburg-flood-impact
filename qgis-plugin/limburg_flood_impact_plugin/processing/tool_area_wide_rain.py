@@ -1,12 +1,18 @@
 from pathlib import Path
 
-from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWriter,
-                       QgsProcessingParameterFeatureSource, QgsProcessingFeedback,
-                       QgsProcessingContext, QgsProcessingParameterRasterLayer)
+from qgis.core import (
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsVectorFileWriter,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingFeedback,
+    QgsProcessingContext,
+    QgsProcessingParameterRasterLayer,
+)
 
 from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain
 
-from .utils import (reload_layer_in_project, get_raster_path, has_one_band, has_field)
+from .utils import reload_layer_in_project, get_raster_path, has_one_band, has_field
 
 
 class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
@@ -19,8 +25,12 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.BUILDINGS_LAYER, "Buildings Layer",
-                                                [QgsProcessing.SourceType.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.SourceType.TypeVectorPolygon],
+            )
+        )
 
         self.addParameter(QgsProcessingParameterRasterLayer(self.T10_LAYER, "T10"))
 
@@ -58,8 +68,7 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
 
         return super().checkParameterValues(parameters, context)
 
-    def processAlgorithm(self, parameters, context: QgsProcessingContext,
-                         feedback: QgsProcessingFeedback):
+    def processAlgorithm(self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback):
 
         self.feedback = feedback
 
@@ -68,7 +77,8 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
             self.BUILDINGS_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
         t10_raster = self.parameterAsRasterLayer(parameters, self.T10_LAYER, context)
         t25_raster = self.parameterAsRasterLayer(parameters, self.T25_LAYER, context)
@@ -78,13 +88,14 @@ class ClassifyAreaWideRainAlgorithm(QgsProcessingAlgorithm):
         t25_path = get_raster_path(t25_raster)
         t100_path = get_raster_path(t100_raster)
 
-        classify_area_wide_rain(Path(buildings_datasource), t10_path, t25_path, t100_path,
-                                self.feedback)
+        classify_area_wide_rain(Path(buildings_datasource), t10_path, t25_path, t100_path, self.feedback)
 
         if not self.feedback.isCanceled():
             self.feedback.pushInfo("Column with classification successfully added!")
         else:
-            self.feedback.pushWarning("Calculation did not finish, due to user interruption. Only part of the values was calculated.")
+            self.feedback.pushWarning(
+                "Calculation did not finish, due to user interruption. Only part of the values was calculated."
+            )
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         reload_layer_in_project(buildings_layer.id())

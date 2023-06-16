@@ -1,12 +1,20 @@
 from pathlib import Path
 
-from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWriter,
-                       QgsProcessingParameterFeatureSource, QgsProcessingFeedback,
-                       QgsProcessingContext)
+from qgis.core import (
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsVectorFileWriter,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingFeedback,
+    QgsProcessingContext,
+)
 
-from limburg_flood_impact.combine_classification import combine_classification, REQUIRED_COLUMNS
+from limburg_flood_impact.combine_classification import (
+    combine_classification,
+    REQUIRED_COLUMNS,
+)
 
-from .utils import (has_field, reload_layer_in_project)
+from .utils import has_field, reload_layer_in_project
 
 
 class CombineClassificationAlgorithm(QgsProcessingAlgorithm):
@@ -16,8 +24,12 @@ class CombineClassificationAlgorithm(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.BUILDINGS_LAYER, "Buildings Layer",
-                                                [QgsProcessing.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.TypeVectorPolygon],
+            )
+        )
 
     def checkParameterValues(self, parameters, context):
 
@@ -35,8 +47,7 @@ class CombineClassificationAlgorithm(QgsProcessingAlgorithm):
 
         return super().checkParameterValues(parameters, context)
 
-    def processAlgorithm(self, parameters, context: QgsProcessingContext,
-                         feedback: QgsProcessingFeedback):
+    def processAlgorithm(self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback):
 
         self.feedback = feedback
 
@@ -45,7 +56,8 @@ class CombineClassificationAlgorithm(QgsProcessingAlgorithm):
             self.BUILDINGS_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
         combine_classification(Path(buildings_datasource), self.set_feedback_percent)
 

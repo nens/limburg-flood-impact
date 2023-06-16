@@ -1,12 +1,17 @@
 from pathlib import Path
 
-from qgis.core import (QgsProcessing, QgsProcessingAlgorithm, QgsVectorFileWriter,
-                       QgsProcessingParameterFeatureSource, QgsProcessingFeedback,
-                       QgsProcessingContext)
+from qgis.core import (
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsVectorFileWriter,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingFeedback,
+    QgsProcessingContext,
+)
 
 from limburg_flood_impact.check_address import check_building_have_address
 
-from .utils import (has_field, reload_layer_in_project)
+from .utils import has_field, reload_layer_in_project
 
 
 class CheckAddressAlgorithm(QgsProcessingAlgorithm):
@@ -17,12 +22,18 @@ class CheckAddressAlgorithm(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.BUILDINGS_LAYER, "Buildings Layer",
-                                                [QgsProcessing.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.TypeVectorPolygon],
+            )
+        )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.ADDRESSES_LAYER, "Addresses Layer",
-                                                [QgsProcessing.TypeVectorPoint]))
+            QgsProcessingParameterFeatureSource(
+                self.ADDRESSES_LAYER, "Addresses Layer", [QgsProcessing.TypeVectorPoint]
+            )
+        )
 
     def checkParameterValues(self, parameters, context):
 
@@ -48,22 +59,23 @@ class CheckAddressAlgorithm(QgsProcessingAlgorithm):
 
         return super().checkParameterValues(parameters, context)
 
-    def processAlgorithm(self, parameters, context: QgsProcessingContext,
-                         feedback: QgsProcessingFeedback):
+    def processAlgorithm(self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback):
 
         buildings_datasource, _ = self.parameterAsCompatibleSourceLayerPathAndLayerName(
             parameters,
             self.BUILDINGS_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
         addresses_datasource, _ = self.parameterAsCompatibleSourceLayerPathAndLayerName(
             parameters,
             self.ADDRESSES_LAYER,
             context,
             QgsVectorFileWriter.supportedFormatExtensions(),
-            feedback=feedback)
+            feedback=feedback,
+        )
 
         check_building_have_address(Path(buildings_datasource), Path(addresses_datasource))
 

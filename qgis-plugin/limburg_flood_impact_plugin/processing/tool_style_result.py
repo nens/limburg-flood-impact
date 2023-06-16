@@ -1,10 +1,16 @@
 from pathlib import Path
 
-from qgis.core import (QgsProcessing, QgsProcessingAlgorithm,
-                       QgsProcessingParameterFeatureSource, QgsProcessingFeedback,
-                       QgsProcessingContext, QgsProcessingParameterEnum, QgsCategorizedSymbolRenderer)
+from qgis.core import (
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsProcessingParameterFeatureSource,
+    QgsProcessingFeedback,
+    QgsProcessingContext,
+    QgsProcessingParameterEnum,
+    QgsCategorizedSymbolRenderer,
+)
 
-from .utils import (has_field, reload_layer_in_project)
+from .utils import has_field, reload_layer_in_project
 
 
 class StyleResultAlgorithm(QgsProcessingAlgorithm):
@@ -24,17 +30,20 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
         "gebiedsbreed_t100",
         "klasse_t10",
         "klasse_t25",
-        "klasse_t100"
+        "klasse_t100",
     ]
 
     def initAlgorithm(self, config=None):
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.BUILDINGS_LAYER, "Buildings Layer",
-                                                [QgsProcessing.TypeVectorPolygon]))
+            QgsProcessingParameterFeatureSource(
+                self.BUILDINGS_LAYER,
+                "Buildings Layer",
+                [QgsProcessing.TypeVectorPolygon],
+            )
+        )
 
-        self.addParameter(
-            QgsProcessingParameterEnum(self.FIELD, "Select Field to Style", self.fields, False))
+        self.addParameter(QgsProcessingParameterEnum(self.FIELD, "Select Field to Style", self.fields, False))
 
     def checkParameterValues(self, parameters, context):
 
@@ -53,12 +62,14 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
         field_name = self.fields[field_number]
 
         if field_name not in buildings_layer.fields().names():
-            return False, f"Selected field `{field_name}` does not exit in the layer. Cannot continue."
+            return (
+                False,
+                f"Selected field `{field_name}` does not exit in the layer. Cannot continue.",
+            )
 
         return super().checkParameterValues(parameters, context)
 
-    def processAlgorithm(self, parameters, context: QgsProcessingContext,
-                         feedback: QgsProcessingFeedback):
+    def processAlgorithm(self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback):
 
         buildings_layer = self.parameterAsVectorLayer(parameters, self.BUILDINGS_LAYER, context)
         field_number = self.parameterAsEnum(parameters, self.FIELD, context)
@@ -73,20 +84,16 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
             "landelijk_t100",
             "stedelijk_t10",
             "stedelijk_t25",
-            "stedelijk_t100"
+            "stedelijk_t100",
         ]:
             file_name = "landelijk_stedelijk.qml"
         elif field_to_style in [
             "gebiedsbreed_t10",
             "gebiedsbreed_t25",
-            "gebiedsbreed_t100"
+            "gebiedsbreed_t100",
         ]:
             file_name = "gebiedsbreed.qml"
-        elif field_to_style in [
-            "klasse_t10",
-            "klasse_t25",
-            "klasse_t100"
-        ]:
+        elif field_to_style in ["klasse_t10", "klasse_t25", "klasse_t100"]:
             file_name = "klasse.qml"
 
         qml_file = Path(__file__).parent.parent / "style" / file_name
