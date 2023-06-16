@@ -1,13 +1,12 @@
-from pathlib import Path
 import argparse
-import tempfile
-import uuid
 import shutil
 import sys
+import tempfile
+import uuid
+from pathlib import Path
 
 import numpy as np
-
-from osgeo import ogr, gdal
+from osgeo import gdal, ogr
 
 TIFF_DRIVER: gdal.Driver = gdal.GetDriverByName("GTiff")
 RASTER_DRIVER: gdal.Driver = gdal.GetDriverByName("MEM")
@@ -64,9 +63,7 @@ def convert_to_binary_raster(ds: gdal.Dataset, values_below_as_zero: float = Non
     return binaryDs
 
 
-def create_empty_raster(name: str,
-                        template_raster: gdal.Dataset,
-                        data_type=gdal.GDT_Byte) -> gdal.Dataset:
+def create_empty_raster(name: str, template_raster: gdal.Dataset, data_type=gdal.GDT_Byte) -> gdal.Dataset:
     """
     Creates empty raster with single band, with settings copied from template_raster (size, crs, geotransformation) and specified data type.
 
@@ -84,11 +81,9 @@ def create_empty_raster(name: str,
     """
 
     # TIFF_DRIVER.Create(f"{TMP_FOLDER}/{name}.tiff",
-    ds: gdal.Dataset = RASTER_DRIVER.Create(name,
-                                            template_raster.RasterXSize,
-                                            template_raster.RasterYSize,
-                                            bands=1,
-                                            eType=data_type)
+    ds: gdal.Dataset = RASTER_DRIVER.Create(
+        name, template_raster.RasterXSize, template_raster.RasterYSize, bands=1, eType=data_type
+    )
     ds.SetGeoTransform(template_raster.GetGeoTransform())
     ds.SetProjection(template_raster.GetProjection())
     return ds
@@ -99,8 +94,9 @@ def create_vector_datasource(fileName: str) -> ogr.DataSource:
     return ds
 
 
-def vectorize_raster(raster_ds: gdal.Dataset,
-                     column_name_for_raster_values: str = COLUMN_RASTER_VALUE) -> ogr.DataSource:
+def vectorize_raster(
+    raster_ds: gdal.Dataset, column_name_for_raster_values: str = COLUMN_RASTER_VALUE
+) -> ogr.DataSource:
     """
     Converts first band of raster_ds into polygon layer with raster values stored in specific column.
 
@@ -135,10 +131,9 @@ def vectorize_raster(raster_ds: gdal.Dataset,
     return vector_ds
 
 
-def select_features(ds: ogr.DataSource,
-                    value_to_select: float,
-                    column_to_select_from: str = COLUMN_RASTER_VALUE,
-                    min_area: float = None) -> ogr.DataSource:
+def select_features(
+    ds: ogr.DataSource, value_to_select: float, column_to_select_from: str = COLUMN_RASTER_VALUE, min_area: float = None
+) -> ogr.DataSource:
     """
     Select features from first layer of provided ds based on value from specific column with option to only select features above specific area.
 
@@ -176,18 +171,14 @@ def select_features(ds: ogr.DataSource,
 
     sql_layer: ogr.Layer = ds.ExecuteSQL(sql, dialect="SQLITE")
 
-    vector_ds.CopyLayer(sql_layer,
-                        "selected",
-                        options=["DST_SRSWKT=" + layer.GetSpatialRef().ExportToWkt()])
+    vector_ds.CopyLayer(sql_layer, "selected", options=["DST_SRSWKT=" + layer.GetSpatialRef().ExportToWkt()])
 
     sql_layer = None
 
     return vector_ds
 
 
-def rasterize_layer_mask(ds: ogr.DataSource,
-                         template_raster: gdal.Dataset,
-                         data_type=gdal.GDT_Float32) -> np.ndarray:
+def rasterize_layer_mask(ds: ogr.DataSource, template_raster: gdal.Dataset, data_type=gdal.GDT_Float32) -> np.ndarray:
     """
     Converts ds into binary raster mask according to template raster.
 
@@ -251,7 +242,6 @@ def multiply_raster_by_mask(raster_ds: gdal.Dataset, mask: np.ndarray) -> gdal.D
 
 
 def delete_all_features_from_layer(layer: ogr.Layer) -> None:
-
     fd: ogr.Feature = layer.GetNextFeature()
 
     while fd:
@@ -259,9 +249,9 @@ def delete_all_features_from_layer(layer: ogr.Layer) -> None:
         fd = layer.GetNextFeature()
 
 
-def flood_mask(flood_raster_ds: gdal.Dataset,
-               only_water_height_above: float = 0.0,
-               minimal_area_of_water_pond: float = 0.0) -> gdal.Dataset:
+def flood_mask(
+    flood_raster_ds: gdal.Dataset, only_water_height_above: float = 0.0, minimal_area_of_water_pond: float = 0.0
+) -> gdal.Dataset:
     """
     Handles the steps to create flood Dataset. Can select only pixels with value above specific height and with specified minimal area.
     Returns raster with one band representing the water height only at areas that fullfil requirements.
@@ -279,16 +269,15 @@ def flood_mask(flood_raster_ds: gdal.Dataset,
     gdal.Dataset
     """
 
-    binary_raster_ds = convert_to_binary_raster(flood_raster_ds,
-                                                values_below_as_zero=only_water_height_above)
+    binary_raster_ds = convert_to_binary_raster(flood_raster_ds, values_below_as_zero=only_water_height_above)
 
     vectorized_raster_ds = vectorize_raster(binary_raster_ds)
 
-    selected_areas_ds = select_features(vectorized_raster_ds,
-                                        value_to_select=1,
-                                        min_area=minimal_area_of_water_pond)
+    selected_areas_ds = select_features(vectorized_raster_ds, value_to_select=1, min_area=minimal_area_of_water_pond)
 
-    rasterized_mask = rasterize_layer_mask(selected_areas_ds, flood_raster_ds, flood_raster_ds.GetRasterBand(1).DataType)
+    rasterized_mask = rasterize_layer_mask(
+        selected_areas_ds, flood_raster_ds, flood_raster_ds.GetRasterBand(1).DataType
+    )
 
     raster = multiply_raster_by_mask(flood_raster_ds, rasterized_mask)
 
@@ -300,10 +289,7 @@ def flood_mask(flood_raster_ds: gdal.Dataset,
     return raster
 
 
-def raster_coordinates(inputX: float,
-                       inputY: float,
-                       inv_gt,
-                       minimal_cell_coordinate: bool = True) -> tuple:
+def raster_coordinates(inputX: float, inputY: float, inv_gt, minimal_cell_coordinate: bool = True) -> tuple:
     """
     Convert input coordinate into row and cell of the raster. inv_gt is the inverse geotransform (gdal.InvGeoTransform()) of the raster.
 
@@ -322,9 +308,7 @@ def raster_coordinates(inputX: float,
     tuple
         x, y
     """
-    x, y = \
-        (inv_gt[0] + inv_gt[1] * inputX + inv_gt[2] * inputY), \
-        (inv_gt[3] + inv_gt[4] * inputX + inv_gt[5] * inputY)
+    x, y = (inv_gt[0] + inv_gt[1] * inputX + inv_gt[2] * inputY), (inv_gt[3] + inv_gt[4] * inputX + inv_gt[5] * inputY)
 
     if minimal_cell_coordinate:
         x = int(x)
@@ -352,13 +336,12 @@ def world_coordinates(inputX: float, inputY: float, gt) -> tuple:
     tuple
         x, y
     """
-    x = (gt[0] + gt[1] * inputX + gt[2] * inputY)
-    y = (gt[3] + gt[4] * inputX + gt[5] * inputY)
+    x = gt[0] + gt[1] * inputX + gt[2] * inputY
+    y = gt[3] + gt[4] * inputX + gt[5] * inputY
     return x, y
 
 
-def get_water_height_array(water_band: gdal.Band, minX: float, maxX: float, minY: float,
-                           maxY: float) -> np.ndarray:
+def get_water_height_array(water_band: gdal.Band, minX: float, maxX: float, minY: float, maxY: float) -> np.ndarray:
     """
     Extract small part of the band as an array, with NoDataValues replaced by 0.
 
@@ -395,32 +378,32 @@ def common_arguments_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
-        '-b',
-        '--buildings',
+        "-b",
+        "--buildings",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with buildings.",
-        required=True
+        required=True,
     )
 
     parser.add_argument(
-        '--t10',
+        "--t10",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t10.",
-        required=True
+        required=True,
     )
 
     parser.add_argument(
-        '--t25',
+        "--t25",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t25.",
-        required=True
+        required=True,
     )
 
     parser.add_argument(
-        '--t100',
+        "--t100",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood depth t100.",
-        required=True
+        required=True,
     )
 
     return parser
@@ -438,9 +421,7 @@ def print_percent(value: float) -> None:
     print(f"Done: {round(value, 2)}%.", end="\r")
 
 
-def find_or_create_field(layer: ogr.Layer,
-                         field_name: str,
-                         field_type=ogr.OFTReal) -> int:
+def find_or_create_field(layer: ogr.Layer, field_name: str, field_type=ogr.OFTReal) -> int:
     """
     Find out if field exist in layer and if not, create it with specified field type.
 
@@ -469,7 +450,7 @@ def find_or_create_field(layer: ogr.Layer,
 
 
 def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
-    """ Return list of corner coordinates from a gdal Dataset """
+    """Return list of corner coordinates from a gdal Dataset"""
     xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
     width, height = ds.RasterXSize, ds.RasterYSize
     xmax = xmin + width * xpixel
@@ -490,7 +471,7 @@ def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
 
 def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float) -> bool:
     """
-    Sets value of field index if the new value is higher then previously stored value. 
+    Sets value of field index if the new value is higher then previously stored value.
     Returns `True` if the field has changed and `False` if it has not.
 
     Parameters
@@ -512,10 +493,10 @@ def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float
     return False
 
 
-def print_progress_bar(count_value, total, suffix=''):
+def print_progress_bar(count_value, total, suffix="") -> None:
     bar_length = 100
     filled_up_Length = int(round(bar_length * count_value / float(total)))
     percentage = round(100.0 * count_value / float(total), 1)
-    bar = '=' * filled_up_Length + '-' * (bar_length - filled_up_Length)
-    sys.stdout.write(f'[{bar}] {percentage}%   {suffix}\r')
+    bar = "=" * filled_up_Length + "-" * (bar_length - filled_up_Length)
+    sys.stdout.write(f"[{bar}] {percentage}%   {suffix}\r")
     sys.stdout.flush()
