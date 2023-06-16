@@ -3,7 +3,7 @@ from typing import Callable
 
 from osgeo import ogr
 
-from ._functions import (find_or_create_field)
+from ._functions import find_or_create_field
 
 VOLDOET_AAN_NORM_CLASSES = {
     "Geen risico": "Ja",
@@ -12,14 +12,13 @@ VOLDOET_AAN_NORM_CLASSES = {
     "Landelijk": "Nader onderzoeken",
     "Stedelijk": "Ja",
     "Landelijk en stedelijk": "Nader onderzoeken",
-    "n.v.t.": "Ja"
+    "n.v.t.": "Ja",
 }
 
 
-def test_against_flood_protection_norm(buildings_path: Path,
-                                       flood_norm_path: Path,
-                                       callback_function: Callable[[float], None] = None,
-                                       qgis_feedback=None):
+def test_against_flood_protection_norm(
+    buildings_path: Path, flood_norm_path: Path, callback_function: Callable[[float], None] = None, qgis_feedback=None
+):
 
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     flood_norm_ds: ogr.DataSource = ogr.Open(flood_norm_path.as_posix(), True)
@@ -77,8 +76,9 @@ def test_against_flood_protection_norm(buildings_path: Path,
                     building_feature.SetField(toetsingsklasse_index, "n.v.t.")
 
         building_feature.SetField(normgebied_index, flood_norm)
-        building_feature.SetField(voldoet_aan_norm_index,
-                                  VOLDOET_AAN_NORM_CLASSES[building_feature.GetFieldAsString("toetsingsklasse")])
+        building_feature.SetField(
+            voldoet_aan_norm_index, VOLDOET_AAN_NORM_CLASSES[building_feature.GetFieldAsString("toetsingsklasse")]
+        )
 
         buildings_layer.SetFeature(building_feature)
 

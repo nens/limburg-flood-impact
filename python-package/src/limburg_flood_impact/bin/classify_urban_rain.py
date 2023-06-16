@@ -1,17 +1,18 @@
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from .._functions import common_arguments_parser, print_percent
 from ..classify_urban_rain import classify_urban_rain
 
 
 def main():
-
-    parser = argparse.ArgumentParser(prog='ClassifyUrbanRain',
-                                     description='Classify urban rain.',
-                                     epilog='',
-                                     parents=[common_arguments_parser()])
+    parser = argparse.ArgumentParser(
+        prog="ClassifyUrbanRain",
+        description="Classify urban rain.",
+        epilog="",
+        parents=[common_arguments_parser()],
+    )
 
     args = parser.parse_args()
 
@@ -40,5 +41,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     sys.exit(main())

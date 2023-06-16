@@ -8,10 +8,12 @@ from ..classify_area_wide_rain import classify_area_wide_rain
 
 def main():
 
-    parser = argparse.ArgumentParser(prog='ClassifyAreaWideRain',
-                                     description='Classify area wide rain.',
-                                     epilog='',
-                                     parents=[common_arguments_parser()])
+    parser = argparse.ArgumentParser(
+        prog="ClassifyAreaWideRain",
+        description="Classify area wide rain.",
+        epilog="",
+        parents=[common_arguments_parser()],
+    )
 
     args = parser.parse_args()
 

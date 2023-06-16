@@ -1,30 +1,31 @@
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from ..check_address import check_building_have_address
 
 
 def main():
-
-    parser = argparse.ArgumentParser(prog='CheckAddress',
-                                     description='Determines if the building has address.',
-                                     epilog='')
-
-    parser.add_argument(
-        '-b',
-        '--buildings',
-        type=lambda p: Path(p).absolute(),
-        help="Path to the file with buildings.",
-        required=True
+    parser = argparse.ArgumentParser(
+        prog="CheckAddress",
+        description="Determines if the building has address.",
+        epilog="",
     )
 
     parser.add_argument(
-        '-a',
-        '--addresses',
+        "-b",
+        "--buildings",
+        type=lambda p: Path(p).absolute(),
+        help="Path to the file with buildings.",
+        required=True,
+    )
+
+    parser.add_argument(
+        "-a",
+        "--addresses",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with addresses.",
-        required=True
+        required=True,
     )
 
     args = parser.parse_args()
@@ -44,5 +45,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     sys.exit(main())

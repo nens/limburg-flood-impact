@@ -38,16 +38,16 @@ def check_building_have_address(buildings_path: Path, adresses_path: Path):
     FROM
         buildings
         LEFT JOIN adresses ON buildings.identificatie = adresses.pandidentificatie
-    """.format(",".join(field_selection))
+    """.format(
+        ",".join(field_selection)
+    )
 
     join_layer: ogr.Layer = memory_ds.ExecuteSQL(sql, dialect="OGRSQL")
 
     if not join_layer:
         raise ValueError("Problem with joining the layers.")
 
-    updated_layer = buildings_ds.CopyLayer(join_layer,
-                                           buildings_layer.GetName(),
-                                           options=['OVERWRITE=YES'])
+    updated_layer = buildings_ds.CopyLayer(join_layer, buildings_layer.GetName(), options=["OVERWRITE=YES"])
 
     if not updated_layer:
         raise ValueError("Problem with adding the required column.")

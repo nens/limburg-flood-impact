@@ -1,31 +1,32 @@
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from ..test_against_flood_protection_norm import test_against_flood_protection_norm
 from .._functions import print_percent
+from ..test_against_flood_protection_norm import test_against_flood_protection_norm
 
 
 def main():
-
-    parser = argparse.ArgumentParser(prog='TestAgainstFloodProtectionNorm',
-                                     description='Test Against Flood Protection Norm.',
-                                     epilog='')
-
-    parser.add_argument(
-        '-b',
-        '--buildings',
-        type=lambda p: Path(p).absolute(),
-        help="Path to the file with buildings.",
-        required=True
+    parser = argparse.ArgumentParser(
+        prog="TestAgainstFloodProtectionNorm",
+        description="Test Against Flood Protection Norm.",
+        epilog="",
     )
 
     parser.add_argument(
-        '-f',
-        '--flood_norm',
+        "-b",
+        "--buildings",
+        type=lambda p: Path(p).absolute(),
+        help="Path to the file with buildings.",
+        required=True,
+    )
+
+    parser.add_argument(
+        "-f",
+        "--flood_norm",
         type=lambda p: Path(p).absolute(),
         help="Path to the file with flood areas.",
-        required=True
+        required=True,
     )
 
     args = parser.parse_args()
@@ -45,5 +46,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     sys.exit(main())
