@@ -1,19 +1,20 @@
-from typing import Callable
 from pathlib import Path
+from typing import Callable
 
-from osgeo import ogr, gdal
+from osgeo import gdal, ogr
 
-from ._functions import (flood_mask)
+from ._functions import flood_mask
 from .classify_urban_rain import classify_water_height
 
 
-def classify_rural_rain(buildings_path: Path,
-                        t10: Path,
-                        t25: Path,
-                        t100: Path,
-                        callback_function: Callable[[float], None] = None,
-                        qgis_feedback=None):
-
+def classify_rural_rain(
+    buildings_path: Path,
+    t10: Path,
+    t25: Path,
+    t100: Path,
+    callback_function: Callable[[float], None] = None,
+    qgis_feedback=None,
+):
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
 
     t10_ds: gdal.Dataset = gdal.Open(t10.as_posix())
@@ -38,15 +39,20 @@ def classify_rural_rain(buildings_path: Path,
         if qgis_feedback.isCanceled():
             return
 
-    classify_water_height(buildings_ds,
-                          t10_masked,
-                          t25_masked,
-                          t100_masked,
-                          field_name="landelijk",
-                          callback_function=callback_function,
-                          qgis_feedback=qgis_feedback)
+    classify_water_height(
+        buildings_ds,
+        t10_masked,
+        t25_masked,
+        t100_masked,
+        field_name="landelijk",
+        callback_function=callback_function,
+        qgis_feedback=qgis_feedback,
+    )
 
     buildings_ds = None
     t10_ds = None
     t25_ds = None
     t100_ds = None
+    t10_masked = None
+    t25_masked = None
+    t100 = None
