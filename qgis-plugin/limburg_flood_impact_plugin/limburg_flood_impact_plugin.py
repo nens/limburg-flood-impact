@@ -4,8 +4,6 @@ import sys
 from qgis.core import QgsApplication
 from qgis.gui import QgisInterface
 
-from qgis.PyQt.QtGui import (QIcon)
-
 try:
     import limburg_flood_impact
 except ModuleNotFoundError:
