@@ -18,7 +18,7 @@ from ._functions import (
 
 
 def classify_water_height(
-    buildings_ds: gdal.Dataset,
+    buildings_layer: ogr.Layer,
     t10: gdal.Dataset,
     t25: gdal.Dataset,
     t100: gdal.Dataset,
@@ -26,8 +26,6 @@ def classify_water_height(
     callback_function: Callable[[float], None] = None,
     qgis_feedback=None,
 ):
-    buildings_layer: ogr.Layer = buildings_ds.GetLayer()
-
     t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
     t25_index = find_or_create_field(buildings_layer, f"{field_name}_t25", ogr.OFTString)
     t100_index = find_or_create_field(buildings_layer, f"{field_name}_t100", ogr.OFTString)
@@ -118,7 +116,8 @@ def classify_water_height(
 
         i += 1
 
-    buildings_layer = None
+    memory_layer = None
+    memory_ds = None
 
 
 def column_value(value: float) -> str:
@@ -139,6 +138,7 @@ def classify_urban_rain(
     gdal.UseExceptions()
 
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
+    buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
     t10_ds: gdal.Dataset = gdal.Open(t10.as_posix())
     t25_ds: gdal.Dataset = gdal.Open(t25.as_posix())
@@ -163,7 +163,7 @@ def classify_urban_rain(
             return
 
     classify_water_height(
-        buildings_ds,
+        buildings_layer,
         t10_masked,
         t25_masked,
         t100_masked,
@@ -172,6 +172,7 @@ def classify_urban_rain(
         qgis_feedback=qgis_feedback,
     )
 
+    buildings_layer = None
     buildings_ds = None
     t10_ds = None
     t25_ds = None
