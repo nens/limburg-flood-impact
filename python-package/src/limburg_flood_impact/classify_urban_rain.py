@@ -1,20 +1,24 @@
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 from osgeo import gdal, ogr
 
 from ._functions import (
     RASTER_DRIVER,
+    TILE_OVERLAP,
+    TILE_SIZE,
     VECTOR_DRIVER,
     delete_all_features_from_layer,
     find_or_create_field,
     flood_mask,
     get_extent,
     get_water_height_array,
+    print_progress_bar,
     raster_coordinates,
+    set_field_if_higher,
     world_coordinates,
 )
+from .extent_tile import Extent
 
 
 def classify_water_height(
@@ -23,7 +27,6 @@ def classify_water_height(
     t25: gdal.Dataset,
     t100: gdal.Dataset,
     field_name: str = "stedelijk",
-    callback_function: Callable[[float], None] = None,
     qgis_feedback=None,
 ):
     t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
@@ -45,6 +48,8 @@ def classify_water_height(
     memory_layer: ogr.Layer = memory_ds.CreateLayer("geometry_layer", buildings_layer.GetSpatialRef(), ogr.wkbPolygon)
 
     raster_bbox = get_extent(t10)
+
+    buildings_layer.SetSpatialFilter(raster_bbox)
 
     feature: ogr.Feature
     i = 0
@@ -69,17 +74,20 @@ def classify_water_height(
         new_feature.SetGeometry(geom)
         memory_layer.SetFeature(new_feature)
 
-        rMinX, rMaxY = raster_coordinates(minX, maxY, inv_gt)
-        rMaxX, rMinY = raster_coordinates(maxX, minY, inv_gt, False)
+        rMinX, rMaxY = raster_coordinates(minX, minY, inv_gt)
+        rMaxX, rMinY = raster_coordinates(maxX, maxY, inv_gt, False)
+
+        if int(rMaxX - rMinX) == 0 or int(rMaxY - rMinY) == 0:
+            continue
 
         feature_raster_ds: gdal.Dataset = RASTER_DRIVER.Create(
             "geom_raster",
             int(rMaxX - rMinX),
-            int(rMinY - rMaxY),
+            int(rMaxY - rMinY),
             bands=1,
             eType=gdal.GDT_Float64,
         )
-        t_coords = world_coordinates(rMinX, rMaxY, gt)
+        t_coords = world_coordinates(rMinX, rMinY, gt)
         feature_raster_ds.SetGeoTransform([t_coords[0], gt[1], gt[2], t_coords[1], gt[4], gt[5]])
         feature_raster_ds.SetProjection(t10.GetProjection())
 
@@ -101,18 +109,20 @@ def classify_water_height(
         t25_max_water_height = np.max(feature_rasterized * t25_water)
         t100_max_water_height = np.max(feature_rasterized * t100_water)
 
-        feature.SetField(water_depth_t10_index, float(t10_max_water_height))
-        feature.SetField(water_depth_t25_index, float(t25_max_water_height))
-        feature.SetField(water_depth_t100_index, float(t100_max_water_height))
+        wd_t10_changed = set_field_if_higher(feature, water_depth_t10_index, float(t10_max_water_height))
+        wd_t25_changed = set_field_if_higher(feature, water_depth_t25_index, float(t25_max_water_height))
+        wd_t100_changed = set_field_if_higher(feature, water_depth_t100_index, float(t100_max_water_height))
 
-        feature.SetField(t10_index, column_value(t10_max_water_height))
-        feature.SetField(t25_index, column_value(t25_max_water_height))
-        feature.SetField(t100_index, column_value(t100_max_water_height))
+        if wd_t10_changed:
+            feature.SetField(t10_index, column_value(t10_max_water_height))
+
+        if wd_t25_changed:
+            feature.SetField(t25_index, column_value(t25_max_water_height))
+
+        if wd_t100_changed:
+            feature.SetField(t100_index, column_value(t100_max_water_height))
 
         buildings_layer.SetFeature(feature)
-
-        if callback_function:
-            callback_function((i / buildings_layer.GetFeatureCount()) * 100)
 
         i += 1
 
@@ -132,7 +142,6 @@ def classify_urban_rain(
     t10: Path,
     t25: Path,
     t100: Path,
-    callback_function: Callable[[float], None] = None,
     qgis_feedback=None,
 ):
     gdal.UseExceptions()
@@ -140,37 +149,52 @@ def classify_urban_rain(
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
-    t10_ds: gdal.Dataset = gdal.Open(t10.as_posix())
-    t25_ds: gdal.Dataset = gdal.Open(t25.as_posix())
-    t100_ds: gdal.Dataset = gdal.Open(t100.as_posix())
+    t10_ds_whole: gdal.Dataset = gdal.Open(t10.as_posix())
+    t25_ds_whole: gdal.Dataset = gdal.Open(t25.as_posix())
+    t100_ds_whole: gdal.Dataset = gdal.Open(t100.as_posix())
 
-    t10_masked = flood_mask(t10_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
+    rasterExtent = Extent.from_gdal_ds(t10_ds_whole)
 
-    if qgis_feedback:
-        if qgis_feedback.isCanceled():
-            return
+    tiles = rasterExtent.create_tiles(TILE_SIZE)
 
-    t25_masked = flood_mask(t25_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
+    for i, tile in enumerate(tiles):
+        print_progress_bar(i + 1, len(tiles), "Tiles processed.")
 
-    if qgis_feedback:
-        if qgis_feedback.isCanceled():
-            return
+        tile.buffer_by(TILE_OVERLAP)
 
-    t100_masked = flood_mask(t100_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
+        t10_ds = tile.extract_from(t10_ds_whole)
+        t25_ds = tile.extract_from(t25_ds_whole)
+        t100_ds = tile.extract_from(t100_ds_whole)
 
-    if qgis_feedback:
-        if qgis_feedback.isCanceled():
-            return
+        t10_masked = flood_mask(t10_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
 
-    classify_water_height(
-        buildings_layer,
-        t10_masked,
-        t25_masked,
-        t100_masked,
-        field_name="stedelijk",
-        callback_function=callback_function,
-        qgis_feedback=qgis_feedback,
-    )
+        if qgis_feedback:
+            if qgis_feedback.isCanceled():
+                return
+
+        t25_masked = flood_mask(t25_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
+
+        if qgis_feedback:
+            if qgis_feedback.isCanceled():
+                return
+
+        t100_masked = flood_mask(t100_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
+
+        if qgis_feedback:
+            if qgis_feedback.isCanceled():
+                return
+
+        classify_water_height(
+            buildings_layer,
+            t10_masked,
+            t25_masked,
+            t100_masked,
+            field_name="stedelijk",
+            qgis_feedback=qgis_feedback,
+        )
+
+        if qgis_feedback:
+            qgis_feedback.setProgress(((i + 1) / len(tiles)) * 100)
 
     buildings_layer = None
     buildings_ds = None
