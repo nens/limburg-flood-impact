@@ -17,10 +17,8 @@ except ModuleNotFoundError:
 from .processing.limburg_flood_impact_provider import LimburgFloodImpactProvider
 
 
-class LimburgFloodImpactPlugin():
-
+class LimburgFloodImpactPlugin:
     def __init__(self, iface):
-
         self.iface: QgisInterface = iface
         self.provider = LimburgFloodImpactProvider()
 
