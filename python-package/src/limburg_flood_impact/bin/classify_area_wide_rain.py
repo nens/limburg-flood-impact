@@ -1,13 +1,12 @@
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from .._functions import common_arguments_parser, print_percent
+from .._functions import common_arguments_parser
 from ..classify_area_wide_rain import classify_area_wide_rain
 
 
 def main():
-
     parser = argparse.ArgumentParser(
         prog="ClassifyAreaWideRain",
         description="Classify area wide rain.",
@@ -38,9 +37,8 @@ def main():
         print("File {} does not exist.".format(t100_path.absolute().as_posix()))
         return
 
-    classify_area_wide_rain(buildings_path, t10_path, t25_path, t100_path, print_percent)
+    classify_area_wide_rain(buildings_path, t10_path, t25_path, t100_path)
 
 
 if __name__ == "__main__":
-
     sys.exit(main())

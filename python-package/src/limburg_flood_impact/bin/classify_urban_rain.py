@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .._functions import common_arguments_parser, print_percent
+from .._functions import common_arguments_parser
 from ..classify_urban_rain import classify_urban_rain
 
 
@@ -37,7 +37,7 @@ def main():
         print("File {} does not exist.".format(t100_path.absolute().as_posix()))
         return
 
-    classify_urban_rain(buildings_path, t10_path, t25_path, t100_path, print_percent)
+    classify_urban_rain(buildings_path, t10_path, t25_path, t100_path)
 
 
 if __name__ == "__main__":
