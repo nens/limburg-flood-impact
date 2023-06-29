@@ -1,5 +1,5 @@
-from typing import Callable
 from pathlib import Path
+from typing import Callable
 
 from osgeo import ogr
 
@@ -35,7 +35,6 @@ REQUIRED_COLUMNS = [
 
 
 def combine_classification(buildings_path: Path, callback_function: Callable[[float], None] = None) -> None:
-
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
 
@@ -51,7 +50,6 @@ def combine_classification(buildings_path: Path, callback_function: Callable[[fl
     feature: ogr.Feature
     i = 0
     for feature in buildings_layer:
-
         feature.SetField(
             klasse_t10_index,
             FLOOD_CLASSES[
