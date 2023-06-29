@@ -6,7 +6,6 @@ from osgeo import ogr
 from ._functions import find_or_create_field
 
 FLOOD_CLASSES = {
-    "None;None;None": "",
     "Geen risico;Geen risico;Geen risico": "Geen risico",
     "Geen risico;Geen risico;Risico, lokale herkomst": "Lokaal",
     "Geen risico;Geen risico;Risico, regionale herkomst": "Gecombineerd",
@@ -34,6 +33,13 @@ REQUIRED_COLUMNS = [
 ]
 
 
+def get_combined_classification(stedelijk: str, landelijk: str, gebiedsbreed: str) -> str:
+    key_value = f"{stedelijk};{landelijk};{gebiedsbreed}"
+    if key_value in FLOOD_CLASSES.keys():
+        return FLOOD_CLASSES[key_value]
+    return ""
+
+
 def combine_classification(buildings_path: Path, callback_function: Callable[[float], None] = None) -> None:
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     buildings_layer: ogr.Layer = buildings_ds.GetLayer()
@@ -52,23 +58,23 @@ def combine_classification(buildings_path: Path, callback_function: Callable[[fl
     for feature in buildings_layer:
         feature.SetField(
             klasse_t10_index,
-            FLOOD_CLASSES[
-                "{};{};{}".format(feature["stedelijk_t10"], feature["landelijk_t10"], feature["gebiedsbreed_t10"])
-            ],
+            get_combined_classification(
+                feature["stedelijk_t10"], feature["landelijk_t10"], feature["gebiedsbreed_t10"]
+            ),
         )
 
         feature.SetField(
             klasse_t25_index,
-            FLOOD_CLASSES[
-                "{};{};{}".format(feature["stedelijk_t25"], feature["landelijk_t25"], feature["gebiedsbreed_t25"])
-            ],
+            get_combined_classification(
+                feature["stedelijk_t25"], feature["landelijk_t25"], feature["gebiedsbreed_t25"]
+            ),
         )
 
         feature.SetField(
             klasse_t100_index,
-            FLOOD_CLASSES[
-                "{};{};{}".format(feature["stedelijk_t100"], feature["landelijk_t100"], feature["gebiedsbreed_t100"])
-            ],
+            get_combined_classification(
+                feature["stedelijk_t100"], feature["landelijk_t100"], feature["gebiedsbreed_t100"]
+            ),
         )
 
         buildings_layer.SetFeature(feature)
