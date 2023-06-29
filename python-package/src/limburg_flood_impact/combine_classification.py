@@ -3,6 +3,8 @@ from pathlib import Path
 
 from osgeo import ogr
 
+from ._functions import find_or_create_field
+
 FLOOD_CLASSES = {
     "Geen risico;Geen risico;Geen risico": "Geen risico",
     "Geen risico;Geen risico;Risico, lokale herkomst": "Lokaal",
@@ -41,13 +43,9 @@ def combine_classification(buildings_path: Path, callback_function: Callable[[fl
         if index == -1:
             raise ValueError("Column {} is needed but does not exist in the data.".format(column))
 
-    buildings_layer.CreateField(ogr.FieldDefn("klasse_t10", ogr.OFTString))
-    buildings_layer.CreateField(ogr.FieldDefn("klasse_t25", ogr.OFTString))
-    buildings_layer.CreateField(ogr.FieldDefn("klasse_t100", ogr.OFTString))
-
-    klasse_t10_index = buildings_layer.FindFieldIndex("klasse_t10", True)
-    klasse_t25_index = buildings_layer.FindFieldIndex("klasse_t25", True)
-    klasse_t100_index = buildings_layer.FindFieldIndex("klasse_t100", True)
+    klasse_t10_index = find_or_create_field(buildings_layer, "klasse_t10", ogr.OFTString)
+    klasse_t25_index = find_or_create_field(buildings_layer, "klasse_t25", ogr.OFTString)
+    klasse_t100_index = find_or_create_field(buildings_layer, "klasse_t100", ogr.OFTString)
 
     feature: ogr.Feature
     i = 0
