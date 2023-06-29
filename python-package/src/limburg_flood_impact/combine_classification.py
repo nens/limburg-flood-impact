@@ -6,6 +6,7 @@ from osgeo import ogr
 from ._functions import find_or_create_field
 
 FLOOD_CLASSES = {
+    "None;None;None": "",
     "Geen risico;Geen risico;Geen risico": "Geen risico",
     "Geen risico;Geen risico;Risico, lokale herkomst": "Lokaal",
     "Geen risico;Geen risico;Risico, regionale herkomst": "Gecombineerd",
