@@ -8,7 +8,8 @@ Er zijn 3 manieren om de tool te gebruiken, die elk hieronder zullen worden toeg
 
 ## Gebruikershandleiding: QGIS plugin
 ### Installatie
-_Afhankelijk van de distributiewijze_
+
+De plugin is in de QGIS plugin repository beschikbaar als Limburg Flood Impact. Instructies voor de installatie van QGIS plugins vind je hier: https://docs.qgis.org/latest/en/docs/user_manual/plugins/plugins.html.
 
 Na de installatie zal er in de Processing Toolbox in de categorie 'Limburg Flood Impact' een aantal processing algorithms zijn toegevoegd. Deze dienen in een bepaalde volgorde te worden doorlopen. Zie hiervoor het stappenplan.
 
