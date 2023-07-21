@@ -47,7 +47,8 @@ def has_one_band(layer: QgsRasterLayer) -> Tuple[bool, str]:
 
 def reload_layer_in_project(layer_id: str) -> None:
     layer = QgsProject.instance().mapLayer(layer_id)
-    layer.reload()
+    if layer:
+        layer.reload()
 
 
 def get_icon_path() -> str:
