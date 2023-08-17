@@ -153,7 +153,15 @@ def classify_urban_rain(
     gdal.UseExceptions()
 
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
-    buildings_layer: ogr.Layer = buildings_ds.GetLayer()
+    tmp_building_layer: ogr.Layer = buildings_ds.GetLayer()
+
+    driver_mem: ogr.Driver = ogr.GetDriverByName("MEMORY")
+    source_mem: ogr.DataSource = driver_mem.CreateDataSource("memData")
+    buildings_layer: ogr.Layer = source_mem.CopyLayer(
+        tmp_building_layer, tmp_building_layer.GetName(), ["OVERWRITE=YES"]
+    )
+
+    tmp_building_layer = None
 
     t10_ds_whole: gdal.Dataset = gdal.Open(t10.as_posix())
     t25_ds_whole: gdal.Dataset = gdal.Open(t25.as_posix())
@@ -204,6 +212,8 @@ def classify_urban_rain(
 
         if qgis_feedback:
             qgis_feedback.setProgress(((i + 1) / len(tiles)) * 100)
+
+    buildings_ds.CopyLayer(buildings_layer, buildings_layer.GetName(), ["OVERWRITE=YES"])
 
     buildings_layer = None
     buildings_ds = None
