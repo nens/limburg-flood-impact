@@ -169,7 +169,9 @@ def classify_water_height(
                 ),
             )
 
-        buildings_layer.SetFeature(feature)
+        feature_set = buildings_layer.SetFeature(feature)
+        if feature_set != 0:
+            raise RuntimeError(f"Error while inserting Feature: {gdal.GetLastErrorMsg()}, {gdal.GetLastErrorNo()}")
 
         i += 1
 

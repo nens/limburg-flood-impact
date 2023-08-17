@@ -125,7 +125,9 @@ def classify_water_height(
         if wd_t100_changed:
             feature.SetField(t100_index, column_value(t100_max_water_height))
 
-        buildings_layer.SetFeature(feature)
+        feature_set = buildings_layer.SetFeature(feature)
+        if feature_set != 0:
+            raise RuntimeError(f"Error while inserting Feature: {gdal.GetLastErrorMsg()}, {gdal.GetLastErrorNo()}")
 
         i += 1
 
