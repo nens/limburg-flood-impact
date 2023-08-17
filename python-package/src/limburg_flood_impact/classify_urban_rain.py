@@ -12,6 +12,7 @@ from ._functions import (
     find_or_create_field,
     flood_mask,
     get_extent,
+    get_layer_extent,
     get_water_height_array,
     print_progress_bar,
     raster_coordinates,
@@ -29,6 +30,8 @@ def classify_water_height(
     field_name: str = "stedelijk",
     qgis_feedback=None,
 ):
+    layer_spatial_filter = get_layer_extent(buildings_layer)
+
     t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
     t25_index = find_or_create_field(buildings_layer, f"{field_name}_t25", ogr.OFTString)
     t100_index = find_or_create_field(buildings_layer, f"{field_name}_t100", ogr.OFTString)
@@ -126,6 +129,7 @@ def classify_water_height(
 
         i += 1
 
+    buildings_layer.SetSpatialFilter(layer_spatial_filter)
     memory_layer = None
     memory_ds = None
 
