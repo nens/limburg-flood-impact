@@ -498,7 +498,7 @@ def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float
     """
     old_value = feature.GetFieldAsDouble(field_index)
 
-    if new_value > old_value:
+    if new_value > old_value or feature.IsFieldNull(field_index) or old_value == 0:
         feature.SetField(field_index, new_value)
         return True
 
