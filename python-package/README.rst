@@ -18,7 +18,9 @@ Gebruikershandleiding: QGIS plugin
 Installatie
 ~~~~~~~~~~~
 
-*Afhankelijk van de distributiewijze*
+De plugin is in de QGIS plugin repository beschikbaar als Limburg Flood
+Impact. Instructies voor de installatie van QGIS plugins vind je hier:
+https://docs.qgis.org/latest/en/docs/user_manual/plugins/plugins.html.
 
 Na de installatie zal er in de Processing Toolbox in de categorie
 ‘Limburg Flood Impact’ een aantal processing algorithms zijn toegevoegd.
@@ -206,6 +208,13 @@ waterdieptekaart behouden.*
 De maximale waterdiepte wordt steeds bepaald door het pand te bufferen
 met 1x de pixelgrootte en van alle pixels die binnen die buffer liggen
 de maximale waarde te nemen.
+
+De verwerking wordt gedaan in tegels van 1.000 bij 1.000 meter. Per
+tegel wordt het onderstaande algoritme uitgevoerd, voor de panden
+waarvan de centroide binnen de tegel ligt. Om randeffecten te voorkomen,
+wordt er een overlap gehanteerd van 50 meter. Dat wil zeggen dat er
+steeds een uitsnede van 1.100 bij 1.100 meter uit de invoerrasters wordt
+gemaakt.
 
 Neerslag op stedelijk gebied: - Waterdieptepixels met waterdiepte < 2 cm
 worden verwijderd (op nodata gezet) - Dit raster wordt gepolygoniseerd -
