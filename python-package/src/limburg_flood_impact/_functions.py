@@ -456,6 +456,11 @@ def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
     xmax = xmin + width * xpixel
     ymin = ymax + height * ypixel
 
+    return geom_from_limits(xmin, xmax, ymin, ymax)
+
+
+def geom_from_limits(xmin: float, xmax: float, ymin: float, ymax: float) -> ogr.Geometry:
+    """Create polygon from position limits (rectangle)."""
     ring = ogr.Geometry(ogr.wkbLinearRing)
     ring.AddPoint(xmin, ymin)
     ring.AddPoint(xmax, ymin)
@@ -467,6 +472,13 @@ def get_extent(ds: gdal.Dataset) -> ogr.Geometry:
     polygon.AddGeometry(ring)
 
     return polygon
+
+
+def get_layer_extent(layer: ogr.Layer) -> ogr.Geometry:
+    """Create Geometry extent from the ogr.Layer"""
+    extent = layer.GetExtent()
+
+    return geom_from_limits(extent[0], extent[1], extent[2], extent[3])
 
 
 def set_field_if_higher(feature: ogr.Feature, field_index: int, new_value: float) -> bool:
