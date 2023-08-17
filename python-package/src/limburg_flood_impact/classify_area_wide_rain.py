@@ -207,6 +207,8 @@ def classify_area_wide_rain(buildings_path: Path, t10: Path, t25: Path, t100: Pa
     tiles = rasterExtent.create_tiles(TILE_SIZE)
 
     for i, tile in enumerate(tiles):
+        buildings_layer.ResetReading()
+
         if qgis_feedback is None:
             print_progress_bar(i + 1, len(tiles), "Tiles processed.")
 

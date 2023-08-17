@@ -164,6 +164,8 @@ def classify_urban_rain(
     tiles = rasterExtent.create_tiles(TILE_SIZE)
 
     for i, tile in enumerate(tiles):
+        buildings_layer.ResetReading()
+
         if qgis_feedback is None:
             print_progress_bar(i + 1, len(tiles), "Tiles processed.")
 
