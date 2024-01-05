@@ -87,7 +87,7 @@ from pathlib import Path
 
 buildings_path = Path("C:/Temp/buildings.gpkg")
 addresses_path = Path("C:/Temp/adresses.gpkg")
-check_building_have_address(buildings_path, adresses_path)
+check_building_have_address(buildings_path, addresses_path)
 ```
 
 #### Algoritme
@@ -107,7 +107,9 @@ _Command line_:
 
 _Python_:
 ```
-from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain, classify_rural_rain, classify_urban_rain
+from limburg_flood_impact.classify_area_wide_rain import classify_area_wide_rain
+from limburg_flood_impact.classify_rural_rain import classify_rural_rain
+from limburg_flood_impact.classify_urban_rain import classify_urban_rain
 from pathlib import Path
 
 buildings_path = Path("C:/Temp/buildings.gpkg")
