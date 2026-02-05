@@ -200,3 +200,9 @@ Optioneel kan elk pand getoetst worden aan de norm. Daarbij wordt de volgende me
 - Als het pand de norm "T10" heeft toegekend gekregen, wordt de klasse voor de T10 bui overgenomen in het attribuut “toetsingsklasse”
 - Als het pand de norm "Geen norm" heeft toegekend gekregen, wordt “n.v.t.” ingevuld in het attribuut “toetsingsklasse”
 - De toetsingsklasse wordt vervolgens vertaald naar "Voldoet aan norm" (ja/nader onderzoeken). Zie de vertaaltabel (https://github.com/nens/limburg-flood-impact/blob/main/misc/classificatie.xlsx)
+
+## Wijzigingen aanbrengen
+Wijzigingen aan de tool of de gebruikershandleiding kunnen worden gemaakt door een [fork te maken van deze repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#forking-a-repository) en daarna [een pull request vanuit die fork te doen](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+
+
+
