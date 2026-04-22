@@ -1,7 +1,7 @@
 from pathlib import Path
-
 import numpy as np
 from osgeo import gdal, ogr
+import gc
 
 from ._functions import (
     RASTER_DRIVER,
@@ -20,7 +20,6 @@ from ._functions import (
     world_coordinates,
 )
 from .extent_tile import Extent
-
 
 def classify_water_height(
     buildings_layer: ogr.Layer,
@@ -57,9 +56,8 @@ def classify_water_height(
     feature: ogr.Feature
     i = 0
     for feature in buildings_layer:
-        if qgis_feedback is not None:
-            if qgis_feedback.isCanceled():
-                break
+        if qgis_feedback is not None and qgis_feedback.isCanceled():
+            break
 
         delete_all_features_from_layer(memory_layer)
 
@@ -129,19 +127,23 @@ def classify_water_height(
         if feature_set != 0:
             raise RuntimeError(f"Error while inserting Feature: {gdal.GetLastErrorMsg()}, {gdal.GetLastErrorNo()}")
 
+        # Clean up
+        del feature_raster_ds, feature_rasterized, t10_water, t25_water, t100_water
+        gc.collect()
+
         i += 1
 
     buildings_layer.SetSpatialFilter(layer_spatial_filter)
-    memory_layer = None
-    memory_ds = None
 
+    # Clean up
+    del memory_layer, memory_ds, t10_band, t25_band, t100_band
+    gc.collect()
 
 def column_value(value: float) -> str:
     if 0.15 < value:
         return "Risico"
     else:
         return "Geen risico"
-
 
 def classify_urban_rain(
     buildings_path: Path,
@@ -161,7 +163,7 @@ def classify_urban_rain(
         tmp_building_layer, tmp_building_layer.GetName(), ["OVERWRITE=YES"]
     )
 
-    tmp_building_layer = None
+    del tmp_building_layer
 
     t10_ds_whole: gdal.Dataset = gdal.Open(t10.as_posix())
     t25_ds_whole: gdal.Dataset = gdal.Open(t25.as_posix())
@@ -185,21 +187,18 @@ def classify_urban_rain(
 
         t10_masked = flood_mask(t10_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
 
-        if qgis_feedback:
-            if qgis_feedback.isCanceled():
-                return
+        if qgis_feedback and qgis_feedback.isCanceled():
+            return
 
         t25_masked = flood_mask(t25_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
 
-        if qgis_feedback:
-            if qgis_feedback.isCanceled():
-                return
+        if qgis_feedback and qgis_feedback.isCanceled():
+            return
 
         t100_masked = flood_mask(t100_ds, only_water_height_above=0.02, minimal_area_of_water_pond=200)
 
-        if qgis_feedback:
-            if qgis_feedback.isCanceled():
-                return
+        if qgis_feedback and qgis_feedback.isCanceled():
+            return
 
         classify_water_height(
             buildings_layer,
@@ -213,13 +212,20 @@ def classify_urban_rain(
         if qgis_feedback:
             qgis_feedback.setProgress(((i + 1) / len(tiles)) * 100)
 
+        # Clean up
+        del t10_ds, t25_ds, t100_ds, t10_masked, t25_masked, t100_masked
+        gc.collect()
+
     buildings_ds.CopyLayer(buildings_layer, buildings_layer.GetName(), ["OVERWRITE=YES"])
 
-    buildings_layer = None
-    buildings_ds = None
-    t10_ds = None
-    t25_ds = None
-    t100_ds = None
-    t10_masked = None
-    t25_masked = None
-    t100_masked = None
+    # Clean up
+    del buildings_layer, buildings_ds, t10_ds_whole, t25_ds_whole, t100_ds_whole, driver_mem, source_mem, tiles, rasterExtent
+    gc.collect()
+
+if __name__ == "__main__":
+    classify_urban_rain(
+        Path("/home/cahik/Lutra/Floods/bb/pand.gpkg"),
+        Path("/home/cahik/Lutra/Floods/bb/Valkenburg-Houthem T100 Gebiedsbreed rev 1 T100_max_depth.tif"),
+        Path("/home/cahik/Lutra/Floods/bb/Valkenburg-Houthem T100 Gebiedsbreed rev 1 T100_max_depth.tif"),
+        Path("/home/cahik/Lutra/Floods/bb/Valkenburg-Houthem T100 Gebiedsbreed rev 1 T100_max_depth.tif"),
+    )
