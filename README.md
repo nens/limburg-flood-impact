@@ -44,31 +44,48 @@ Voer de stappen uit zoals beschreven in de paragraaf "Methode en stappenplan". L
 ## Invoer en uitvoer
 ### Panden ('buildings')
 _Beschrijving_: Deze input moet een selectie zijn uit de BAG. De makkelijkste manier om deze data (in het juiste formaat) te verkrijgen is door een selectie te maken uit de PDOK WFS service `BAG WFS: pand` en deze selectie op te slaan in een GeoPackage. In QGIS is deze WFS service beschikbaar via de PDOK Services plugin.
+
 _Geometrietype_: Polygon
+
 _Verplicht attribuut_: identificatie (string)
+
 _Bestandsformaat_: GeoPackage
 
 ### Verblijfsobjecten ('addresses')
 _Beschrijving_: Deze input moet een selectie zijn uit de BAG. De makkelijkste manier om deze data (in het juiste formaat) te verkrijgen is door een selectie te maken uit de PDOK WFS service `BAG WFS: Verblijfsobject` en deze selectie op te slaan in een GeoPackage. In QGIS is deze WFS service beschikbaar via de PDOK Services plugin.
+
 _Geometrietype_: Point
+
 _Verplicht attribuut_: pandidentificatie (string)
+
 _Bestandsformaat_: GeoPackage
 
 ### Maximale waterdiepte ('T10', 'T25', 'T100')
 _Beschrijving_: Een raster waarvan elke pixels de maximale waterdiepte (in m boven maaiveld) beschrijft die optreedt bij een bui met een herhalingstijd van resp. 10, 25 of 100 jaar.  
+
 _Bestandsformaat_: GeoTIFF (.tif of .tiff)
+
 _Datatype_: Float32
+
 _Overige eisen_: 
+
 - resolutie moet onderling hetzelfde zijn
+
 - eenheid is waterdiepte in m boven maaiveld (dus geen waterstand in m NAP!)
+
 - Nodatavalue is gedefinieerd
+
 - Projectie is Rijksdriehoekstelsel (Nieuw) (EPSG:28992)
 
 ### Normering regionale wateroverlast ('flood protection norm')
 _Beschrijving_: Polygonen die aangeven voor welke herhalingstijd het betreffende gebied beschermt moet zijn. Deze input moet een selectie zijn uit de laag "Normering regionale wateroverlast" van de WFS service "Provinciale beleidsplannen" van de provincie Limburg.
+
 _Geometrietype_: Polygon
+
 _Verplicht attribuut_: "NORM"
+
 _Bestandsformaat_: GeoPackage
+
 _Overige instructies_: Om deze gegegevens te verkrijgen: maak in QGIS verbinding met de WFS service https://portal.prvlimburg.nl/geodata/PROVINCIALE_BELEIDSPLANNEN/wfs? . Deze service bevat een groot aantal lagen. Voeg de laag "Normering regionale wateroverlast" toe aan het QGIS project. Maak een selectie op basis van het gebied waarvoor de analyse moet worden gedaan. Sla deze selectie op als GeoPackage.
 
 ## Methode en stappenplan
