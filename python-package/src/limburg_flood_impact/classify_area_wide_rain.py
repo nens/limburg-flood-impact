@@ -95,9 +95,8 @@ def classify_water_height(
         new_feature: ogr.Feature = ogr.Feature(memory_layer.GetLayerDefn())
         new_feature.SetGeometry(geom)
         memory_layer.SetFeature(new_feature)
-
-        rMinX, rMaxY = raster_coordinates(minX, minY, inv_gt)
-        rMaxX, rMinY = raster_coordinates(maxX, maxY, inv_gt, False)
+        rMinX, rMinY = raster_coordinates(minX, maxY, inv_gt)
+        rMaxX, rMaxY = raster_coordinates(maxX, minY, inv_gt, False)
 
         if int(rMaxX - rMinX) == 0 or int(rMaxY - rMinY) == 0:
             continue

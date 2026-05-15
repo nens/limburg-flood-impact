@@ -173,7 +173,7 @@ def select_features(
 
     vector_ds.CopyLayer(sql_layer, "selected", options=["DST_SRSWKT=" + layer.GetSpatialRef().ExportToWkt()])
 
-    sql_layer = None
+    ds.ReleaseResultSet(sql_layer)
 
     return vector_ds
 

@@ -4,3 +4,4 @@ sandbox
 python-package/src/*.egg-info
 qgis-plugin/*.zip
 .idea/
+*.py[co]
