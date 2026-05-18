@@ -11,7 +11,7 @@ from qgis.core import (
     QgsVectorFileWriter,
 )
 
-from .utils import get_raster_path, has_field, has_one_band, reload_layer_in_project
+from .utils import get_raster_path, has_one_band, reload_layer_in_project
 
 
 class ClassifyRuralRainAlgorithm(QgsProcessingAlgorithm):
@@ -53,13 +53,6 @@ class ClassifyRuralRainAlgorithm(QgsProcessingAlgorithm):
         single_band, msg = has_one_band(t100_raster)
 
         if not single_band:
-            return False, msg
-
-        buildings = self.parameterAsLayer(parameters, self.BUILDINGS_LAYER, context)
-
-        field_exist, msg = has_field(buildings, "identificatie")
-
-        if not field_exist:
             return False, msg
 
         return super().checkParameterValues(parameters, context)

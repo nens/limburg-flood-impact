@@ -4,6 +4,7 @@ from typing import Callable
 from osgeo import ogr
 
 from ._functions import find_or_create_field
+from .default_field_names import DEFAULT_NORM_FIELD
 
 VOLDOET_AAN_NORM_CLASSES = {
     "Geen risico": "Ja",
@@ -17,7 +18,11 @@ VOLDOET_AAN_NORM_CLASSES = {
 
 
 def test_against_flood_protection_norm(
-    buildings_path: Path, flood_norm_path: Path, callback_function: Callable[[float], None] = None, qgis_feedback=None
+    buildings_path: Path,
+    flood_norm_path: Path,
+    callback_function: Callable[[float], None] = None,
+    qgis_feedback=None,
+    norm_field: str = DEFAULT_NORM_FIELD,
 ):
 
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
@@ -50,7 +55,7 @@ def test_against_flood_protection_norm(
 
             flood_geometry: ogr.Geometry = flood_feature.geometry()
 
-            flood_norm = flood_feature.GetFieldAsString("NORM")
+            flood_norm = flood_feature.GetFieldAsString(norm_field)
 
             if building_geometry.Intersect(flood_geometry):
 

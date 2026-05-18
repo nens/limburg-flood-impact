@@ -1,0 +1,3 @@
+DEFAULT_NORM_FIELD = "norm"
+DEFAULT_BUILDING_ID_FIELD = "identificatie"
+DEFAULT_ADDRESS_BUILDING_ID_FIELD = "pandidentificatie"

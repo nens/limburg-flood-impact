@@ -12,6 +12,7 @@ from qgis.core import (
 from limburg_flood_impact.test_against_flood_protection_norm import (
     test_against_flood_protection_norm,
 )
+from limburg_flood_impact.default_field_names import DEFAULT_NORM_FIELD
 
 from .utils import has_field, reload_layer_in_project
 
@@ -54,7 +55,7 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
                 "Flood Protection Norm Layer data source has more than one layer.",
             )
 
-        field_exist, msg = has_field(buildings_layer, "identificatie")
+        field_exist, msg = has_field(flood_layer, DEFAULT_NORM_FIELD)
 
         if not field_exist:
             return False, msg

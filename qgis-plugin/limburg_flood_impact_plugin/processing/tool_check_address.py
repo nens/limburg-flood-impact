@@ -10,6 +10,8 @@ from qgis.core import (
 )
 
 from limburg_flood_impact.check_address import check_building_have_address
+from limburg_flood_impact.default_field_names import DEFAULT_BUILDING_ID_FIELD
+from limburg_flood_impact.default_field_names import DEFAULT_ADDRESS_BUILDING_ID_FIELD
 
 from .utils import has_field, reload_layer_in_project
 
@@ -47,12 +49,12 @@ class CheckAddressAlgorithm(QgsProcessingAlgorithm):
         if 1 < addresses_layer.dataProvider().subLayerCount():
             return False, "Addresses Layer data source has more than one layer."
 
-        field_exist, msg = has_field(addresses_layer, "pandidentificatie")
+        field_exist, msg = has_field(addresses_layer, DEFAULT_ADDRESS_BUILDING_ID_FIELD)
 
         if not field_exist:
             return False, msg
 
-        field_exist, msg = has_field(buildings_layer, "identificatie")
+        field_exist, msg = has_field(buildings_layer, DEFAULT_BUILDING_ID_FIELD)
 
         if not field_exist:
             return False, msg
