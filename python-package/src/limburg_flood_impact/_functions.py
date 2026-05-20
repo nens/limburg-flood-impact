@@ -10,7 +10,7 @@ from osgeo import gdal, ogr
 
 TIFF_DRIVER: gdal.Driver = gdal.GetDriverByName("GTiff")
 RASTER_DRIVER: gdal.Driver = gdal.GetDriverByName("MEM")
-VECTOR_DRIVER: ogr.Driver = ogr.GetDriverByName("MEMORY")
+VECTOR_DRIVER: ogr.Driver = ogr.GetDriverByName("MEM") or ogr.GetDriverByName("MEMORY")
 COLUMN_RASTER_VALUE = "rasterValue"
 TMP_FOLDER = f"{tempfile.gettempdir()}/{str(uuid.uuid4()).split('-')[0]}"
 

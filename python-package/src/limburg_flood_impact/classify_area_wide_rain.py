@@ -12,7 +12,6 @@ from ._functions import (
     find_or_create_field,
     flood_mask,
     get_extent,
-    get_layer_extent,
     get_water_height_array,
     print_progress_bar,
     raster_coordinates,
@@ -41,7 +40,6 @@ def classify_water_height(
     field_name: str = "gebiedsbreed",
     qgis_feedback=None,
 ):
-    layer_spatial_filter = get_layer_extent(buildings_layer)
 
     t10_index = find_or_create_field(buildings_layer, f"{field_name}_t10", ogr.OFTString)
     t25_index = find_or_create_field(buildings_layer, f"{field_name}_t25", ogr.OFTString)
@@ -97,6 +95,12 @@ def classify_water_height(
         memory_layer.SetFeature(new_feature)
         rMinX, rMinY = raster_coordinates(minX, maxY, inv_gt)
         rMaxX, rMaxY = raster_coordinates(maxX, minY, inv_gt, False)
+
+        # raster_coordinates does not know where the edge
+        # of the raster is, we need to do some limiting
+        width, height = t10.RasterXSize, t10.RasterYSize
+        rMaxX = min(rMaxX, width - 1)
+        rMaxY = min(rMaxY, height - 1)
 
         if int(rMaxX - rMinX) == 0 or int(rMaxY - rMinY) == 0:
             continue
@@ -174,7 +178,7 @@ def classify_water_height(
 
         i += 1
 
-    buildings_layer.SetSpatialFilter(layer_spatial_filter)
+    buildings_layer.SetSpatialFilter(None)
 
     memory_layer = None
     memory_ds = None
@@ -197,8 +201,7 @@ def classify_area_wide_rain(buildings_path: Path, t10: Path, t25: Path, t100: Pa
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     tmp_building_layer: ogr.Layer = buildings_ds.GetLayer()
 
-    driver_mem: ogr.Driver = ogr.GetDriverByName("MEMORY")
-    source_mem: ogr.DataSource = driver_mem.CreateDataSource("memData")
+    source_mem: ogr.DataSource = VECTOR_DRIVER.CreateDataSource("memData")
     buildings_layer: ogr.Layer = source_mem.CopyLayer(
         tmp_building_layer, tmp_building_layer.GetName(), ["OVERWRITE=YES"]
     )

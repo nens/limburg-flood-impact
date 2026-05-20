@@ -4,6 +4,7 @@ from osgeo import ogr
 
 from .default_field_names import DEFAULT_BUILDING_ID_FIELD
 from .default_field_names import DEFAULT_ADDRESS_BUILDING_ID_FIELD
+from ._functions import VECTOR_DRIVER
 
 
 def check_building_have_address(
@@ -19,9 +20,7 @@ def check_building_have_address(
     adresses_ds: ogr.DataSource = ogr.Open(adresses_path.as_posix())
     adresses_layer: ogr.Layer = adresses_ds.GetLayer()
 
-    memory_driver: ogr.Driver = ogr.GetDriverByName("MEMORY")
-
-    memory_ds: ogr.DataSource = memory_driver.CreateDataSource("ds")
+    memory_ds: ogr.DataSource = VECTOR_DRIVER.CreateDataSource("ds")
     memory_ds.CopyLayer(buildings_layer, "buildings")
     memory_ds.CopyLayer(adresses_layer, "adresses")
 

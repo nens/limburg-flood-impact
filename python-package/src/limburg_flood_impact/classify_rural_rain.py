@@ -2,7 +2,7 @@ from pathlib import Path
 
 from osgeo import gdal, ogr
 
-from ._functions import TILE_OVERLAP, TILE_SIZE, flood_mask, print_progress_bar
+from ._functions import TILE_OVERLAP, TILE_SIZE, VECTOR_DRIVER, flood_mask, print_progress_bar
 from .classify_urban_rain import classify_water_height
 from .extent_tile import Extent
 
@@ -19,8 +19,7 @@ def classify_rural_rain(
     buildings_ds: ogr.DataSource = ogr.Open(buildings_path.as_posix(), True)
     tmp_building_layer: ogr.Layer = buildings_ds.GetLayer()
 
-    driver_mem: ogr.Driver = ogr.GetDriverByName("MEMORY")
-    source_mem: ogr.DataSource = driver_mem.CreateDataSource("memData")
+    source_mem: ogr.DataSource = VECTOR_DRIVER.CreateDataSource("memData")
     buildings_layer: ogr.Layer = source_mem.CopyLayer(
         tmp_building_layer, tmp_building_layer.GetName(), ["OVERWRITE=YES"]
     )
