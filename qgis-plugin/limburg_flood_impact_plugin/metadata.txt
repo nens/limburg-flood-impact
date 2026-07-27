@@ -5,6 +5,8 @@
 [general]
 name=Limburg Flood Impact
 qgisMinimumVersion=3.22
+# Set qgisMaximumVersion to cover QGIS 4.x
+qgisMaximumVersion=4.99
 description=Limburg Flood Impact Plugin.
 version=1.4.0
 author=Lutra Consulting Ltd for Nelen & Schuurmans
