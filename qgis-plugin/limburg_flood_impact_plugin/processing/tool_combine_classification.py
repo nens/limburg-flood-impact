@@ -27,7 +27,7 @@ class CombineClassificationAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.BUILDINGS_LAYER,
                 "Buildings Layer",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
