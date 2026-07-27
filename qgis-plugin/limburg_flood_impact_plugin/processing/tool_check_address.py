@@ -25,13 +25,13 @@ class CheckAddressAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.BUILDINGS_LAYER,
                 "Buildings Layer",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
         self.addParameter(
             QgsProcessingParameterFeatureSource(
-                self.ADDRESSES_LAYER, "Addresses Layer", [QgsProcessing.TypeVectorPoint]
+                self.ADDRESSES_LAYER, "Addresses Layer", [QgsProcessing.SourceType.TypeVectorPoint]
             )
         )
 

@@ -27,7 +27,7 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.BUILDINGS_LAYER,
                 "Buildings Layer",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
@@ -35,7 +35,7 @@ class TestAgainstFloodProtectionNormAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.FLOOD_LAYER,
                 "Flood Protection Norm Layer",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
