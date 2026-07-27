@@ -10,7 +10,7 @@ from qgis.core import (
     QgsCategorizedSymbolRenderer,
 )
 
-from .utils import has_field, reload_layer_in_project
+from .utils import reload_layer_in_project
 
 
 class StyleResultAlgorithm(QgsProcessingAlgorithm):
@@ -51,11 +51,6 @@ class StyleResultAlgorithm(QgsProcessingAlgorithm):
 
         if 1 < buildings_layer.dataProvider().subLayerCount():
             return False, "Buildings Layer data source has more than one layer."
-
-        field_exist, msg = has_field(buildings_layer, "identificatie")
-
-        if not field_exist:
-            return False, msg
 
         field_number = self.parameterAsEnum(parameters, self.FIELD, context)
 

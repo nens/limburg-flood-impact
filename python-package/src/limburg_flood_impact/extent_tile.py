@@ -56,7 +56,18 @@ class Extent:
         self.maxY = self.maxY + size
 
     def extract_from(self, ds: gdal.Dataset) -> gdal.Dataset:
-        params = {"projWin": self.as_gdal_projWin()}
+        # prevent gdal warnings by intersecting
+        # our extent with the extent of the source dataset
+        tileMinX, tileMaxY, tileMaxX, tileMinY = self.as_gdal_projWin()
+        dsMinX, dsMaxY, dsMaxX, dsMinY = Extent.from_gdal_ds(ds).as_gdal_projWin()
+        intersectionProjWin = (
+            max(tileMinX, dsMinX),
+            min(tileMaxY, dsMaxY),
+            min(tileMaxX, dsMaxX),
+            max(tileMinY, dsMinY),
+        )
+
+        params = {"projWin": intersectionProjWin}
 
         raster_path = Path(ds.GetDescription())
 
