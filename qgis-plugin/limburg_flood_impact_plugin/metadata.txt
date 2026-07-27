@@ -8,7 +8,7 @@ qgisMinimumVersion=3.22
 # Set qgisMaximumVersion to cover QGIS 4.x
 qgisMaximumVersion=4.99
 description=Limburg Flood Impact Plugin.
-version=1.3.1
+version=1.3.0
 author=Lutra Consulting Ltd for Nelen & Schuurmans
 email=info@nelen-schuurmans.nl
 
