@@ -32,6 +32,7 @@ fi
 mkdir -p $DEST_BUILD
 
 cp -R $SRC/* $DEST_BUILD/
+cp "$DIR/../LICENSE" $DEST_BUILD/
 find $DEST_BUILD -type l -exec unlink {} \;
 
 find $DEST_BUILD -name \*.pyc -delete
